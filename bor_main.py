@@ -12,14 +12,17 @@ from openpyxl import load_workbook
 
 
 # Import all modules ONCE
-import vox
-import galaxy
-import safeer
-import shaab
-import star_cinemas
-import cine_royale
-import truth
-import truth_weekly
+from modules import (
+    vox,
+    galaxy,
+    safeer,
+    shaab,
+    star_cinemas,
+    cine_royale,
+    truth,
+    truth_weekly
+)
+
 #import nova
 
 # Mapping cinema → module
