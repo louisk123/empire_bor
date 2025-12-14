@@ -18,6 +18,15 @@ from modules import (
     truth,
     truth_weekly
 )
+    # Force reload modules each time (good for development)
+importlib.reload(vox)
+importlib.reload(galaxy)
+importlib.reload(safeer)
+importlib.reload(shaab)
+importlib.reload(star_cinemas)
+importlib.reload(cine_royale)
+importlib.reload(truth)
+importlib.reload(truth_weekly)
 
 
 
@@ -96,15 +105,7 @@ def get_sheet_name(row):
 
 
 def process_pdf(pdf_path, excel_path):
-    # Force reload modules each time (good for development)
-    importlib.reload(vox)
-    importlib.reload(galaxy)
-    importlib.reload(safeer)
-    importlib.reload(shaab)
-    importlib.reload(star_cinemas)
-    importlib.reload(cine_royale)
-    importlib.reload(truth)
-    importlib.reload(truth_weekly)
+
 
     #file_df=pd.DataFrame()
     now_value = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
