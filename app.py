@@ -6,8 +6,7 @@ from bor_main import process_pdf
 
 st.title("Empire BOR Extraction System")
 
-st.write("Upload one Excel f
-ile and several PDF files to process them.")
+st.write("Upload one Excel file and several PDF files to process them.")
 
 # --------------------------
 # UPLOAD EXCEL FILE
