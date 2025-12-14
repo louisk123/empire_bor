@@ -3,7 +3,7 @@
 import pdfplumber
 import pandas as pd
 from datetime import datetime
-from openpyxl import load_workbookok
+from openpyxl import load_workbook
 
 
 
@@ -95,17 +95,10 @@ def get_sheet_name(row):
 
 
 
-
-
-
-file_df=pd.DataFrame()
-now_value = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-
-
-
 def process_pdf(pdf_path, excel_path):
+    #file_df=pd.DataFrame()
+    now_value = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     # read the mapping sheet
     mapping_df = pd.read_excel(
         excel_path,
