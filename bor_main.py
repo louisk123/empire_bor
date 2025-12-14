@@ -44,35 +44,6 @@ module_map = {
 
 
 
-# excel
-'''
-def append_to_excel(excel_path, sheet_name, new_df):
-
-    if len(new_df) == 0:
-        print("⚠️ new_df is EMPTY → Nothing appended")
-        return
-
-    # Load existing
-    if os.path.exists(excel_path):
-        try:
-            existing_df = pd.read_excel(excel_path, sheet_name=sheet_name)
-            new_df = new_df.reindex(columns=existing_df.columns)
-            combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-        except:
-            combined_df = new_df.copy()
-    else:
-        combined_df = new_df.copy()
-
-    # Append safely
-    with pd.ExcelWriter(
-        excel_path,
-        engine="openpyxl",
-        mode="a" if os.path.exists(excel_path) else "w",
-        if_sheet_exists="overlay"
-    ) as writer:
-        combined_df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-'''
 
 def find_last_real_row(ws):
     """
@@ -143,121 +114,116 @@ mapping_df = pd.read_excel(
 
 
 
-for root, dirs, files in os.walk(ROOT):
-    for f in files:
-        if f.lower().endswith(".pdf"):
-            pdf_path = os.path.join(root, f)
+def process_pdf(pdf_path, excel_path):
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            text = pdf.pages[0].extract_text() or ""
+            first_line = text.split("\n")[0].strip()
+    except:
+        # print("Could not read:", pdf_path)
+        return
 
-            # Read first line of PDF
-            try:
-                with pdfplumber.open(pdf_path) as pdf:
-                    text = pdf.pages[0].extract_text() or ""
-                    first_line = text.split("\n")[0].strip()
-            except:
-                print("Could not read:", pdf_path)
-                continue
+    # Find matching cinema
+    cinema_found = None
+    cinema_country = None
+    exhibitor = None
+    first_line_upper = first_line.upper()
 
-            # Find matching cinema
-            cinema_found = None
-            cinema_country= None
-            exhibitor=None
-            first_line_upper = first_line.upper()
+    for _, row in mapping_df.iterrows():
 
-            for _, row in mapping_df.iterrows():
+        if first_line_upper == "AL MARIAH MALL ABU DHABHI":
+            first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
 
-                if first_line_upper=="AL MARIAH MALL ABU DHABHI":
-                  first_line_upper=first_line_upper + " " + text.split("\n")[1].strip().upper()
+        cinema_name = str(row["Name from File"]).upper()
+        if cinema_name in first_line_upper:
+            cinema_found = cinema_name
+            cinema_country = row["Country"]
+            exhibitor = row["Exhibitor"]
+            break
 
-                cinema_name = str(row["Name from File"]).upper()
-                if cinema_name in first_line_upper:
-                    cinema_found = cinema_name
-                    cinema_country = row["Country"]
-                    exhibitor=row["Exhibitor"]
+    if cinema_found is None:
+        print("No cinema match for:", pdf_path)
+        return
 
-                    break
+    # Call correct module
+    module = module_map[exhibitor]
 
-            if cinema_found is None:
-                print("No cinema match for:", pdf_path)
-                continue
+    try:
+        file_df = module.fetch_data(pdf_path, exhibitor)
 
+        if file_df is None or len(file_df) == 0:
+            print("Empty df, skipping:", pdf_path)
+            return
 
+        # Fix column names
+        file_df.columns = [
+            "File", "Exhibitor", "Cinema", "Week Type", "Extraction Date",
+            "Movie", "Date", "Time", "Screen", "Format", "Ticket Type",
+            "Admits", "Gross", "Net", "Comp", "Is Summary", "Summary Sessions"
+        ]
 
-            # Call hello() from the correct module
-            module = module_map[exhibitor]
+        file_df["Extraction Date"] = now_value
+        file_df["Country"] = cinema_country
 
-            try:
+        append_to_excel(excel_path, "Raw Data", file_df)
 
-              file_df= module.fetch_data(pdf_path, exhibitor) # get the data
-              if file_df is None or len(file_df) == 0:
-                print("Empty df, skipping")
-              else:
-                file_df.columns = [
-                    "File", "Exhibitor","Cinema", "Week Type", "Extraction Date",
-                    "Movie","Date","Time","Screen","Format","Ticket Type",
-                    "Admits","Gross","Net","Comp","Is Summary","Summary Sessions"
-                ]
-              #print("Done:", pdf_path)
-              file_df["Extraction Date"] = now_value
-              file_df["Country"]=cinema_country
-              append_to_excel(excel_path,"Raw Data",file_df)  # append to raw data sheet
+        # Normalize fields
+        file_df["Week Type"] = file_df["Week Type"].fillna("").str.strip().str.lower()
+        file_df["Is Summary"] = file_df["Is Summary"].fillna(0).astype(int)
 
+        # --------------------------
+        # SPLIT DATA
+        # --------------------------
 
-              file_df["Week Type"] = file_df["Week Type"].fillna("").str.strip().str.lower()
-              file_df["Is Summary"] = file_df["Is Summary"].fillna(0).astype(int)
+        daily_df = file_df[
+            (file_df["Week Type"] != "weekly") &
+            (file_df["Is Summary"] != 1)
+        ]
 
+        daily_sum_df = file_df[
+            (file_df["Week Type"] != "weekly") &
+            (file_df["Is Summary"] == 1)
+        ]
 
-              # A. daily non summary
-              daily_df = file_df[
-                  (file_df["Week Type"] != "weekly") &
-                  (file_df["Is Summary"] != 1)
-              ]
+        weekly_df = file_df[
+            (file_df["Week Type"] == "weekly") &
+            (file_df["Is Summary"] != 1)
+        ]
 
-              # B. daily summary
-              daily_sum_df = file_df[
-                  (file_df["Week Type"] != "weekly") &
-                  (file_df["Is Summary"] == 1)
-              ]
+        weekly_sum_df = file_df[
+            (file_df["Week Type"] == "weekly") &
+            (file_df["Is Summary"] == 1)
+        ]
 
-              # C. weekly non summary
-              weekly_df = file_df[
-                  (file_df["Week Type"] == "weekly") &
-                  (file_df["Is Summary"] != 1)
-              ]
+        # --------------------------
+        # AGGREGATIONS
+        # --------------------------
 
-              # D. weekly summary
-              weekly_sum_df = file_df[
-                  (file_df["Week Type"] == "weekly") &
-                  (file_df["Is Summary"] == 1)
-              ]
+        group_cols = [
+            "Country", "File", "Exhibitor", "Cinema", "Extraction Date",
+            "Movie", "Date", "Format"
+        ]
 
-              #aggregations
+        agg_rules = {
+            "Admits": "sum",
+            "Gross": "sum",
+            "Net": "sum",
+            "Comp": "sum",
+            "Summary Sessions": "sum",
+            "Screen": "nunique",
+            "Time": "count"
+        }
 
-              group_cols = ["Country","File","Exhibitor","Cinema","Extraction Date",
-                            "Movie","Date","Format",
-                            ]
+        daily_agg = daily_df.groupby(group_cols).agg(agg_rules).reset_index()
+        daily_sum_agg = daily_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
+        weekly_agg = weekly_df.groupby(group_cols).agg(agg_rules).reset_index()
+        weekly_sum_agg = weekly_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
 
-              agg_rules = {
-                  "Admits": "sum",
-                  "Gross": "sum",
-                  "Net": "sum",
-                  "Comp": "sum",
-                  "Summary Sessions": "sum",
-                  "Screen": "nunique",
-                  "Time": "count" #"nunique"
-              }
+        # Write results
+        append_to_excel(excel_path, "Daily BOR", daily_agg)
+        append_to_excel(excel_path, "Daily BOR - Summary", daily_sum_agg)
+        append_to_excel(excel_path, "Weekly BOR", weekly_agg)
+        append_to_excel(excel_path, "Weekly BOR - Summary", weekly_sum_agg)
 
-
-              daily_agg       = daily_df.groupby(group_cols).agg(agg_rules).reset_index()
-              daily_sum_agg   = daily_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
-              weekly_agg      = weekly_df.groupby(group_cols).agg(agg_rules).reset_index()
-              weekly_sum_agg  = weekly_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
-
-
-              append_to_excel(excel_path,"Daily BOR",daily_agg)
-              append_to_excel(excel_path,"Daily BOR - Summary",daily_sum_agg)
-              append_to_excel(excel_path,"Weekly BOR",weekly_agg)
-              append_to_excel(excel_path,"Weekly BOR - Summary",weekly_sum_agg)
-
-
-            except Exception as e:
-                print("Error calling :", e)
+    except Exception as e:
+        print("Error calling module:", e)
