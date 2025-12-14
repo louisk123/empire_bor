@@ -496,7 +496,7 @@ def fetch_data(pdf_path,exhibitor):
 
     return df
 
-df = fetch_data("pp.pdf", "sds")  # df must be your dataframe
+#df = fetch_data("pp.pdf", "sds")  # df must be your dataframe
 
 #with pd.ExcelWriter("vox_single_output.xlsx") as writer:
 #    df.to_excel(writer, sheet_name="Extracted Data", index=False)
