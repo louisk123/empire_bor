@@ -427,10 +427,10 @@ def extract_page2_details(pdf_path, movie_list):
                     current_screen,
                     current_format,
                     ticket_class,
-                    0 if price == 0 else admits,
+                    0 if gross == 0 else admits,
                     gross,
                     net,
-                    admits if price == 0 else 0,  #"in case price is 0 the put admists in comps and put admits=0
+                    admits if gross == 0 else 0,  #"in case price is 0 the put admists in comps and put admits=0
                     None,
                     None
 
