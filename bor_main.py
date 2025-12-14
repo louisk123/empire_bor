@@ -18,16 +18,6 @@ from modules import (
     truth,
     truth_weekly
 )
-    # Force reload modules each time (good for development)
-importlib.reload(vox)
-importlib.reload(galaxy)
-importlib.reload(safeer)
-importlib.reload(shaab)
-importlib.reload(star_cinemas)
-importlib.reload(cine_royale)
-importlib.reload(truth)
-importlib.reload(truth_weekly)
-
 
 
 
