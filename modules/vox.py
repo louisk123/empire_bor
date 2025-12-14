@@ -13,9 +13,7 @@ formats = ["2D", "3D", "4D", "IMAX 3D", "IMAX", "ATMOS", "MX4D", "DOLBY", "4DX",
            "MAX 2D", "ADJ 2D", "ADJ 3D", "ATMOS 3D", "ADJ 2D AR", "ADJ 4DX",
            "SCREEN X", "MAX 3D", "IMAX LASER 3D", "MX4D 3D", "IMAX LASER 2D",
            "4D E MOTION", "4D E MOTION 3D", "2D JAPANESE", "ICE", "SPHERA",
-           "2D HINDI", "2D TAMIL", "XPERIENCE", "2D TELUGU", "2D MALAYALAM",
-           "EMPIRE MINIS", "EMPIRE PREMIERE", "2D RUSSIAN",
-           "EMPIRE MINIS ARABIC", "2D TURKISH", "PRIME",
+           "2D HINDI", "2D TAMIL", "XPERIENCE", "2D TELUGU", "2D MALAYALAM"
            "4DX-2D", "4DX-3D", "4DX-4D","IMAX-2D","IMAX-2"
            ]
 
