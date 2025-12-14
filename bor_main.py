@@ -1,13 +1,9 @@
 
 
-import os
-import sys
 import pdfplumber
 import pandas as pd
 from datetime import datetime
-from google.colab import drive
-import re
-from openpyxl import load_workbook
+from openpyxl import load_workbookok
 
 
 
@@ -23,9 +19,6 @@ from modules import (
     truth_weekly
 )
 
-#import nova
-
-# Mapping cinema → module
 
 
 
@@ -108,16 +101,18 @@ def get_sheet_name(row):
 file_df=pd.DataFrame()
 now_value = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# read th MApping sheet
-mapping_df = pd.read_excel(
-    excel_path,
-    sheet_name="Cinemas Mapping",
-    usecols=["Name from File", "Line", "Exhibitor", "Country"]
-)
+
 
 
 
 def process_pdf(pdf_path, excel_path):
+    # read the mapping sheet
+    mapping_df = pd.read_excel(
+        excel_path,
+        sheet_name="Cinemas Mapping",
+        usecols=["Name from File", "Line", "Exhibitor", "Country"]
+    )
+
     try:
         with pdfplumber.open(pdf_path) as pdf:
             text = pdf.pages[0].extract_text() or ""
