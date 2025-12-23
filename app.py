@@ -87,17 +87,23 @@ if st.button("Start Processing"):
             tmp_bor.close()
             tmp_bor_path = tmp_bor.name
     
-            # READ AS TEXT, NO DATE PARSING
+            # READ USING PANDAS (KEEP ORIGINAL TYPES)
             df_bor = pd.read_excel(
                 tmp_bor_path,
-                sheet_name="Data",
-                dtype=str,        # 👈 critical
-                header=None
+                sheet_name="Data"
             )
     
-            df_bor = df_bor.iloc[1:, :16]   # skip first row, first 16 cols
+            # Convert ONLY Screening Date
+            if "Screening Date" in df_bor.columns:
+                df_bor["Screening Date"] = (
+                    pd.to_datetime(df_bor["Screening Date"], errors="coerce")
+                      .dt.strftime("%d/%m/%Y")
+                )
     
-            # write in bulk
+            # Skip first row, keep first 16 columns
+            df_bor = df_bor.iloc[1:, :16]
+    
+            # Append rows (fast)
             for row in df_bor.itertuples(index=False, name=None):
                 ws_target.append(row)
     
