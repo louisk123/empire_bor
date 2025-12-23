@@ -90,15 +90,13 @@ if st.button("Start Processing"):
             wb_bor = load_workbook(tmp_bor_path, data_only=True)
             ws_bor = wb_bor["Data"]
         
-            # skip first row, copy first 11 columns
-            for row in ws_bor.iter_rows(min_row=2, max_col=11):
-                for c_idx, cell in enumerate(row, start=1):
-                    ws_target.cell(row=start_row, column=c_idx, value=cell.value)
-                start_row += 1
+            for row in ws_bor.iter_rows(min_row=2, max_col=16, values_only=True):
+                ws_target.append(row)
         
             os.remove(tmp_bor_path)
         
         wb_target.save(temp_excel_path)
+
 
 
     st.success("Processing complete!")
