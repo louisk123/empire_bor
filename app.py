@@ -19,6 +19,17 @@ excel_file = st.file_uploader("Upload Excel Output File", type=["xlsx"])
 pdf_files = st.file_uploader("Upload PDF Files", type=["pdf"], accept_multiple_files=True)
 
 # --------------------------
+# UPLOAD BOR EXCEL FILES
+# --------------------------
+bor_excel_files = st.file_uploader(
+    "Upload BOR Files (Excel)",
+    type=["xlsm"],
+    accept_multiple_files=True
+)
+
+
+
+# --------------------------
 # RUN PROCESSING
 # --------------------------
 if st.button("Start Processing"):
@@ -54,6 +65,33 @@ if st.button("Start Processing"):
         os.remove(temp_pdf_path)
 
         progress.progress(idx / total)
+
+        #copy data frrom BOR
+        if bor_excel_files:
+            wb_target = load_workbook(temp_excel_path)
+            ws_target = wb_target["Data From BOR"]
+        
+            # start after last non-empty row
+            start_row = ws_target.max_row + 1
+        
+            for bor_file in bor_excel_files:
+                tmp_bor = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+                tmp_bor.write(bor_file.read())
+                tmp_bor_path = tmp_bor.name
+        
+                df_bor = pd.read_excel(tmp_bor_path, sheet_name=0)
+                df_bor = df_bor.iloc[:, :11]   # first 11 columns
+                df_bor = df_bor.iloc[1:]        # skip header row
+        
+                for _, row in df_bor.iterrows():
+                    for c_idx, value in enumerate(row, start=1):
+                        ws_target.cell(row=start_row, column=c_idx, value=value)
+                    start_row += 1
+        
+                os.remove(tmp_bor_path)
+        
+            wb_target.save(temp_excel_path)
+
 
     st.success("Processing complete!")
 
