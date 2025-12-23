@@ -4,6 +4,7 @@ import pdfplumber
 import pandas as pd
 from datetime import datetime
 from openpyxl import load_workbook
+from rapidfuzz import process, fuzz
 
 
 
@@ -91,6 +92,55 @@ def get_sheet_name(row):
         return "Weekly BOR - summary"
     return "Daily BOR"
 
+def map_movie(name, choices, threshold=80):
+    if not name or pd.isna(name):
+        return name
+
+    match = process.extractOne(
+        name,
+        choices,
+        scorer=fuzz.token_set_ratio
+    )
+
+    if match and match[1] >= threshold:
+        return match[0]
+
+    return name
+
+def screen_rule(g):
+    valid_screens = (
+        g.dropna(subset=["Screen", "Time"])
+         .groupby("Screen")["Time"]
+         .nunique()
+    )
+    n = (valid_screens >= 3).sum()
+    return n if n > 0 else 1
+
+
+def fix_dates(file_df):
+
+    flip_exhibitors = {"Cinepolis", "Vox", "Reel", "NOVO", "Cinemacity", "Roxy"}
+    slash_exhibitors = {"Galaxy", "Truth", "Truth Weekly", "Shaab", "Safeer"}
+
+    # ensure string
+    file_df["Date"] = file_df["Date"].astype(str)
+
+    # 1) replace - with / for slash exhibitors
+    mask_slash = file_df["Exhibitor"].isin(slash_exhibitors)
+    file_df.loc[mask_slash, "Date"] = file_df.loc[mask_slash, "Date"].str.replace("-", "/", regex=False)
+
+    # 2) flip day/month for flip exhibitors when not summary
+    mask_flip = (
+        file_df["Exhibitor"].isin(flip_exhibitors) &
+        (file_df["Is Summary"] != 1)
+    )
+
+    # split and reassemble safely
+    date_parts = file_df.loc[mask_flip, "Date"].str.split("/", expand=True)
+    file_df.loc[mask_flip, "Date"] = (
+        date_parts[1] + "/" + date_parts[0] + "/" + date_parts[2]
+    )
+    return file_df
 
 
 
@@ -105,6 +155,20 @@ def process_pdf(pdf_path, excel_path):
         excel_path,
         sheet_name="Cinemas Mapping",
         usecols=["Name from File", "Line", "Exhibitor", "Country"]
+    )
+    movies_df = pd.read_excel(
+        excel_path,
+        sheet_name="Movies",
+        usecols=["BOR Movie Name"]
+    )
+    
+    
+    movie_list = (
+        movies_df["BOR Movie Name"]
+        .dropna()
+        .astype(str)
+        .unique()
+        .tolist()
     )
 
     try:
@@ -149,13 +213,26 @@ def process_pdf(pdf_path, excel_path):
 
         # Fix column names
         file_df.columns = [
-            "File", "Exhibitor", "Cinema", "Week Type", "Extraction Date",
-            "Movie", "Date", "Time", "Screen", "Format", "Ticket Type",
-            "Admits", "Gross", "Net", "Comp", "Is Summary", "Summary Sessions"
-        ]
+                    "File", "Exhibitor","Cinema", "Week Type", "Extraction Date",
+                    "Movie","Date","Time","Screen","Format","Ticket Type",
+                    "Admits","Gross","Net","Comp","Is Summary","Summary Sessions"
+          ]
 
         file_df["Extraction Date"] = now_value
         file_df["Country"] = cinema_country
+        
+        file_df[["Movie Mapped"]] = file_df["Movie"].apply(
+                  lambda x: pd.Series(map_movie(x, movie_list))
+        )
+        file_df=fix_dates(file_df)
+        EXPECTED_ORDER = [
+              "File","Exhibitor","Cinema","Week Type","Extraction Date",
+              "Movie","Movie Mapped","Date","Time","Screen","Format",
+              "Ticket Type","Admits","Gross","Net","Comp",
+              "Is Summary","Summary Sessions","Country"
+              ]
+
+        file_df = file_df.reindex(columns=EXPECTED_ORDER)
 
         append_to_excel(excel_path, "Raw Data", file_df)
 
@@ -163,6 +240,26 @@ def process_pdf(pdf_path, excel_path):
         file_df["Week Type"] = file_df["Week Type"].fillna("").str.strip().str.lower()
         file_df["Is Summary"] = file_df["Is Summary"].fillna(0).astype(int)
 
+        #compute number of screens
+        group_cols = [
+                  "File","Exhibitor","Cinema","Week Type","Extraction Date",
+              "Movie","Movie Mapped","Date",
+              "Is Summary","Country","Format"
+        ]
+
+        screen_counts = file_df.groupby(group_cols).apply(screen_rule)
+
+        file_df["Screen_Calc"] = (
+                  file_df
+                  .set_index(group_cols)
+                  .index
+                  .map(screen_counts)
+)
+
+        
+        
+        
+        
         # --------------------------
         # SPLIT DATA
         # --------------------------
@@ -202,8 +299,8 @@ def process_pdf(pdf_path, excel_path):
             "Net": "sum",
             "Comp": "sum",
             "Summary Sessions": "sum",
-            "Screen": "nunique",
-            "Time": "count"
+            "Screen_Calc": "max",
+            "Time": "nunique"
         }
 
         daily_agg = daily_df.groupby(group_cols).agg(agg_rules).reset_index()
