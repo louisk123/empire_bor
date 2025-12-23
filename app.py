@@ -78,23 +78,31 @@ if st.button("Start Processing"):
     if bor_excel_files:
         wb_target = load_workbook(temp_excel_path)
         ws_target = wb_target["Data From BOR"]
-        
+    
         start_row = ws_target.max_row + 1
-        
+    
         for bor_file in bor_excel_files:
             tmp_bor = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
             tmp_bor.write(bor_file.read())
             tmp_bor.close()
             tmp_bor_path = tmp_bor.name
-        
-            wb_bor = load_workbook(tmp_bor_path, data_only=True)
-            ws_bor = wb_bor["Data"]
-        
-            for row in ws_bor.iter_rows(min_row=2, max_col=16, values_only=True):
+    
+            # READ AS TEXT, NO DATE PARSING
+            df_bor = pd.read_excel(
+                tmp_bor_path,
+                sheet_name="Data",
+                dtype=str,        # 👈 critical
+                header=None
+            )
+    
+            df_bor = df_bor.iloc[1:, :16]   # skip first row, first 16 cols
+    
+            # write in bulk
+            for row in df_bor.itertuples(index=False, name=None):
                 ws_target.append(row)
-        
+    
             os.remove(tmp_bor_path)
-        
+    
         wb_target.save(temp_excel_path)
 
 
