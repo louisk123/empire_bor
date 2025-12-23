@@ -86,10 +86,10 @@ if st.button("Start Processing"):
             tmp_bor.write(bor_file.read())
             tmp_bor.close()
             tmp_bor_path = tmp_bor.name
-
-            df_bor = pd.read_excel(tmp_bor_path, sheet_name=0)
-            df_bor = df_bor.iloc[:, :11]   # first 11 columns
-            df_bor = df_bor.iloc[1:]        # skip header row
+            
+            df_bor = pd.read_excel(tmp_bor_path, sheet_name="Data", header=None)
+            df_bor = df_bor.iloc[1:]      # skip first row
+            df_bor = df_bor.iloc[:, :11]  # first 11 columns
 
             for _, row in df_bor.iterrows():
                 for c_idx, value in enumerate(row, start=1):
