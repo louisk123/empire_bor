@@ -290,7 +290,7 @@ def process_pdf(pdf_path, excel_path):
 
         group_cols = [
             "Country", "File", "Exhibitor", "Cinema", "Extraction Date",
-            "Movie", "Date", "Format"
+            "Movie","Movie Mapped", "Date", "Format"
         ]
 
         agg_rules = {
