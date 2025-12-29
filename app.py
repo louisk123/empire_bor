@@ -104,7 +104,7 @@ if st.button("Start Processing"):
             df_bor["Cinema_Movie_Format_Date"] = (
             df_bor["Theater"].astype(str) + " | " +
             df_bor["Description"].astype(str) + " | " +
-            df_bor["Format"].astype(str) + " | " +
+            df_bor["Movie Type"].astype(str) + " | " +
             df_bor["Screening Date"].astype(str)
             )
 
