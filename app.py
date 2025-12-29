@@ -105,7 +105,7 @@ if st.button("Start Processing"):
             df_bor["Cinema"].astype(str) + " | " +
             df_bor["Movie"].astype(str) + " | " +
             df_bor["Format"].astype(str) + " | " +
-            df_bor["Date"].astype(str)
+            df_bor["Screening Date"].astype(str)
             )
 
             # Skip header row, keep original 16 + new column
