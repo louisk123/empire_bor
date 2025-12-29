@@ -95,19 +95,37 @@ def get_sheet_name(row):
         return "Weekly BOR - summary"
     return "Daily BOR"
 
-def map_movie(name, choices, threshold=80):
+def normalize_title(s):
+    if not s or pd.isna(s):
+        return ""
+    s = s.lower()
+    s = re.sub(r"\[.*?\]", "", s)      # remove [Arabic], [Japanese], etc.
+    s = re.sub(r"[^a-z0-9 ]", " ", s)  # remove punctuation
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def map_movie(name, movie_list, threshold=80):
     if not name or pd.isna(name):
         return name
 
+    name_norm = normalize_title(name)
+
+    # Build normalized lookup once per call
+    norm_to_original = {
+        normalize_title(m): m for m in movie_list
+    }
+
     match = process.extractOne(
-        name,
-        choices,
+        name_norm,
+        norm_to_original.keys(),
         scorer=fuzz.token_set_ratio
     )
 
     if match and match[1] >= threshold:
-        return match[0]
+        return norm_to_original[match[0]]
 
+    # If confidence is low, keep original
     return name
 
 def screen_rule(g):
