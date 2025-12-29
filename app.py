@@ -99,9 +99,18 @@ if st.button("Start Processing"):
                     pd.to_datetime(df_bor["Screening Date"], errors="coerce")
                       .dt.strftime("%d/%m/%Y")
                 )
-    
-            # Skip first row, keep first 16 columns
-            df_bor = df_bor.iloc[1:, :16]
+
+                    # Add combined column (BOR context only)
+            df_bor["Cinema_Movie_Format_Date"] = (
+            df_bor["Cinema"].astype(str) + " | " +
+            df_bor["Movie"].astype(str) + " | " +
+            df_bor["Format"].astype(str) + " | " +
+            df_bor["Date"].astype(str)
+            )
+
+            # Skip header row, keep original 16 + new column
+            df_bor = df_bor.iloc[1:, :17]
+            
     
             # Append rows (fast)
             for row in df_bor.itertuples(index=False, name=None):
