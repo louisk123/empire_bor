@@ -39,12 +39,7 @@ module_map = {
 }
 
 def add_cinema_movie_format_date(df):
-    df["Cinema_Movie_Format_Date"] = (
-        df["Cinema"].astype(str) + " | " +
-        df["Movie Mapped"].astype(str) + " | " +
-        df["Format"].astype(str) + " | " +
-        df["Date"].astype(str)
-    )
+    df["Cinema_Movie_Format_Date"] = (df["Cinema"].astype(str) + " | " + df["Movie Mapped"].astype(str) + " | " + df["Format"].astype(str) + " | " +df["Date"].astype(str))
     return df
 
 
