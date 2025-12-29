@@ -192,6 +192,24 @@ def process_pdf(pdf_path, excel_path):
         .unique()
         .tolist()
     )
+    
+    format_df = pd.read_excel(
+    excel_path,
+    sheet_name="Format",
+    usecols=["PDF", "BOR"]
+    )
+    
+    format_map = (
+    format_df
+    .dropna(subset=["PDF", "BOR"])
+    .assign(
+        PDF=lambda d: d["PDF"].astype(str).str.strip().str.upper()
+    )
+    .set_index("PDF")["BOR"]
+    .to_dict()
+    )
+
+
 
     try:
         with pdfplumber.open(pdf_path) as pdf:
@@ -248,6 +266,15 @@ def process_pdf(pdf_path, excel_path):
         )
 
         file_df=fix_dates(file_df)
+        file_df["Format"] = (
+            file_df["Format"]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            .map(format_map)
+            .fillna(file_df["Format"])  # keep original if not found
+        )
+
         EXPECTED_ORDER = [
               "File","Exhibitor","Cinema","Week Type","Extraction Date",
               "Movie","Movie Mapped","Date","Time","Screen","Format",
