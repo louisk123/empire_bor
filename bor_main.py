@@ -310,10 +310,10 @@ def process_pdf(pdf_path, excel_path):
 
         for df in [daily_agg, daily_sum_agg, weekly_agg, weekly_sum_agg]:
             df["Cinema_Movie_Format_Date"] = (
-            df["Cinema"].astype(str) + " | " +
-            df["Movie Mapped"].astype(str) + " | " +
-            df["Format"].astype(str) + " | " +
-            df["Date"].astype(str)
+                df["Cinema"].astype(str) + " | " +
+                df["Movie Mapped"].astype(str) + " | " +
+                df["Format"].astype(str) + " | " +
+                df["Date"].astype(str)
         )
 
 
