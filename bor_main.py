@@ -38,6 +38,14 @@ module_map = {
     "Safeer": safeer
 }
 
+def add_cinema_movie_format_date(df):
+    df["Cinema_Movie_Format_Date"] = (
+        df["Cinema"].astype(str) + " | " +
+        df["Movie Mapped"].astype(str) + " | " +
+        df["Format"].astype(str) + " | " +
+        df["Date"].astype(str)
+    )
+    return df
 
 
 
@@ -308,14 +316,10 @@ def process_pdf(pdf_path, excel_path):
         weekly_agg = weekly_df.groupby(group_cols).agg(agg_rules).reset_index()
         weekly_sum_agg = weekly_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
         
-        for df in [daily_agg, daily_sum_agg, weekly_agg, weekly_sum_agg]:
-            df["Cinema_Movie_Format_Date"] = (
-                df["Cinema"].astype(str) + " | " +
-                df["Movie Mapped"].astype(str) + " | " +
-                df["Format"].astype(str) + " | " +
-                df["Date"].astype(str)
-            )
-
+        daily_agg = add_cinema_movie_format_date(daily_agg)
+        daily_sum_agg = add_cinema_movie_format_date(daily_sum_agg)
+        weekly_agg = add_cinema_movie_format_date(weekly_agg)
+        weekly_sum_agg = add_cinema_movie_format_date(weekly_sum_agg)
 
 
 
