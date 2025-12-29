@@ -100,6 +100,9 @@ if st.button("Start Processing"):
                       .dt.strftime("%d/%m/%Y")
                 )
 
+            # Skip header row, keep original 16 + new column
+            df_bor = df_bor.iloc[1:, :17]
+
                     # Add combined column (BOR context only)
             df_bor["Cinema_Movie_Format_Date"] = (
             df_bor["Theater"].astype(str) + " | " +
@@ -108,8 +111,7 @@ if st.button("Start Processing"):
             df_bor["Screening Date"].astype(str)
             )
 
-            # Skip header row, keep original 16 + new column
-            df_bor = df_bor.iloc[1:, :17]
+
             
     
             # Append rows (fast)
