@@ -2,6 +2,7 @@
 
 import pdfplumber
 import pandas as pd
+import re
 from datetime import datetime
 from openpyxl import load_workbook
 from rapidfuzz import process, fuzz
@@ -242,9 +243,10 @@ def process_pdf(pdf_path, excel_path):
         file_df["Extraction Date"] = now_value
         file_df["Country"] = cinema_country
         
-        file_df[["Movie Mapped"]] = file_df["Movie"].apply(
-                  lambda x: pd.Series(map_movie(x, movie_list))
+        file_df["Movie Mapped"] = file_df["Movie"].apply(
+            lambda x: map_movie(x, movie_list)
         )
+
         file_df=fix_dates(file_df)
         EXPECTED_ORDER = [
               "File","Exhibitor","Cinema","Week Type","Extraction Date",
