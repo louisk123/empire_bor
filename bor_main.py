@@ -314,7 +314,8 @@ def process_pdf(pdf_path, excel_path):
                 df["Movie Mapped"].astype(str) + " | " +
                 df["Format"].astype(str) + " | " +
                 df["Date"].astype(str)
-        )
+            )
+
 
 
         # Write results
