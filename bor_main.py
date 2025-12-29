@@ -307,7 +307,7 @@ def process_pdf(pdf_path, excel_path):
         daily_sum_agg = daily_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
         weekly_agg = weekly_df.groupby(group_cols).agg(agg_rules).reset_index()
         weekly_sum_agg = weekly_sum_df.groupby(group_cols).agg(agg_rules).reset_index()
-
+        
         for df in [daily_agg, daily_sum_agg, weekly_agg, weekly_sum_agg]:
             df["Cinema_Movie_Format_Date"] = (
                 df["Cinema"].astype(str) + " | " +
@@ -315,6 +315,7 @@ def process_pdf(pdf_path, excel_path):
                 df["Format"].astype(str) + " | " +
                 df["Date"].astype(str)
             )
+
 
 
 
