@@ -306,6 +306,14 @@ def process_pdf(pdf_path, excel_path):
 
         file_df["Cinema"] = file_df["Cinema"].astype(str).str.strip().str.upper()
         file_df["Exhibitor"] = file_df["Exhibitor"].astype(str).str.strip().str.upper()
+
+        # Replace Exhibitor → BOR Exhibitor
+        file_df["Exhibitor"] = (
+            file_df["Exhibitor"]
+            .map(exhibitor_map)
+            .fillna(file_df["Exhibitor"])
+        )
+
         
         # Replace Cinema → BOR File
         file_df["Cinema"] = (
@@ -314,12 +322,7 @@ def process_pdf(pdf_path, excel_path):
             .fillna(file_df["Cinema"])
         )
         
-        # Replace Exhibitor → BOR Exhibitor
-        file_df["Exhibitor"] = (
-            file_df["Exhibitor"]
-            .map(exhibitor_map)
-            .fillna(file_df["Exhibitor"])
-        )
+
 
 
         EXPECTED_ORDER = [
