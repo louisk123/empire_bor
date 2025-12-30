@@ -309,7 +309,7 @@ def process_pdf(pdf_path, excel_path):
 
         # Replace Exhibitor → BOR Exhibitor
         file_df["Exhibitor"] = (
-            file_df["Exhibitor"]
+            file_df["Cinema"]
             .map(exhibitor_map)
             .fillna(file_df["Exhibitor"])
         )
