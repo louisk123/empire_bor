@@ -176,7 +176,7 @@ def process_pdf(pdf_path, excel_path):
     mapping_df = pd.read_excel(
         excel_path,
         sheet_name="Cinemas Mapping",
-        usecols=["Name from File", "Line", "Exhibitor", "Country"]
+        usecols=["Name from File", "Line", "Exhibitor", "Country","BOR File",	"BOR Exhibitor"]
     )
     movies_df = pd.read_excel(
         excel_path,
@@ -209,6 +209,35 @@ def process_pdf(pdf_path, excel_path):
     .to_dict()
     )
 
+
+    cinema_df = pd.read_excel(
+        excel_path,
+        sheet_name="Cinemas Mapping",
+        usecols=["Name from File", "BOR File", "BOR Exhibitor"]
+    )
+    
+    cinema_map = (
+        cinema_df
+        .dropna(subset=["Name from File", "BOR File"])
+        .assign(
+            PDF=lambda d: d["Name from File"].astype(str).str.strip().str.upper()
+        )
+        .set_index("PDF")["BOR File"]
+        .to_dict()
+    )
+
+    
+    exhibitor_map = (
+        cinema_df
+        .dropna(subset=["Name from File", "BOR Exhibitor"])
+        .assign(
+            PDF=lambda d: d["Name from File"].astype(str).str.strip().str.upper()
+        )
+        .set_index("PDF")["BOR Exhibitor"]
+        .to_dict()
+    )
+
+ 
 
 
     try:
@@ -275,6 +304,24 @@ def process_pdf(pdf_path, excel_path):
             .fillna(file_df["Format"])  # keep original if not found
         )
 
+        file_df["Cinema"] = file_df["Cinema"].astype(str).str.strip().str.upper()
+        file_df["Exhibitor"] = file_df["Exhibitor"].astype(str).str.strip().str.upper()
+        
+        # Replace Cinema → BOR File
+        file_df["Cinema"] = (
+            file_df["Cinema"]
+            .map(cinema_map)
+            .fillna(file_df["Cinema"])
+        )
+        
+        # Replace Exhibitor → BOR Exhibitor
+        file_df["Exhibitor"] = (
+            file_df["Exhibitor"]
+            .map(exhibitor_map)
+            .fillna(file_df["Exhibitor"])
+        )
+
+
         EXPECTED_ORDER = [
               "File","Exhibitor","Cinema","Week Type","Extraction Date",
               "Movie","Movie Mapped","Date","Time","Screen","Format",
@@ -289,7 +336,7 @@ def process_pdf(pdf_path, excel_path):
         # Normalize fields
         file_df["Week Type"] = file_df["Week Type"].fillna("").str.strip().str.lower()
         file_df["Is Summary"] = file_df["Is Summary"].fillna(0).astype(int)
-
+        
         #compute number of screens
         group_cols = [
                   "File","Exhibitor","Cinema","Week Type","Extraction Date",
@@ -304,7 +351,7 @@ def process_pdf(pdf_path, excel_path):
                   .set_index(group_cols)
                   .index
                   .map(screen_counts)
-)
+        )
 
         
         
