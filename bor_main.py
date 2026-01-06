@@ -24,20 +24,20 @@ from modules import (
 
 
 module_map = {
-    "Vox":uae_vox,
-    "Star Cinemas": uae_star_cinemas,
-    "Cinepolis": uae_vox,
-    "Vox": uae_vox,
-    "Reel": uae_vox,
-    "NOVO": uae_vox,
-    "Cinemacity": uae_vox,
-    "Roxy": uae_vox,
-    "Cine Royale": uae_cine_royale,
-    "Galaxy": uae_galaxy,
-    "Truth": uae_truth,
-    "Truth Weekly": uae_truth_weekly,
-    "Shaab": uae_shaab,
-    "Safeer": uae_safeer
+    "UAE Vox":uae_vox,
+    "UAE Star Cinemas": uae_star_cinemas,
+    "UAE Cinepolis": uae_vox,
+    "UAE Vox": uae_vox,
+    "UAE Reel": uae_vox,
+    "UAE NOVO": uae_vox,
+    "UAE Cinemacity": uae_vox,
+    "UAE Roxy": uae_vox,
+    "UAE Cine Royale": uae_cine_royale,
+    "UAE Galaxy": uae_galaxy,
+    "UAE Truth": uae_truth,
+    "UAE Truth Weekly": uae_truth_weekly,
+    "UAE Shaab": uae_shaab,
+    "UAE Safeer": uae_safeer
 }
 
 def add_cinema_movie_format_date(df):
@@ -272,7 +272,7 @@ def process_pdf(pdf_path, excel_path):
         return
 
     # Call correct module
-    key = f"{cinema_country}_{exhibitor}".strip().lower()
+    key = f"{cinema_country} {exhibitor}".strip()
     module = module_map.get(key)
 
 
