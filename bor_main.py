@@ -24,19 +24,19 @@ from modules import (
 
 
 module_map = {
-    "Star Cinemas": star_cinemas,
-    "Cinepolis": vox,
-    "Vox": vox,
-    "Reel": vox,
-    "NOVO": vox,
-    "Cinemacity": vox,
-    "Roxy": vox,
-    "Cine Royale": cine_royale,
-    "Galaxy": galaxy,
-    "Truth": truth,
-    "Truth Weekly": truth_weekly,
-    "Shaab": shaab,
-    "Safeer": safeer
+    "Star Cinemas": uae_star_cinemas,
+    "Cinepolis": uae_vox,
+    "Vox": uae_vox,
+    "Reel": uae_vox,
+    "NOVO": uae_vox,
+    "Cinemacity": uae_vox,
+    "Roxy": uae_vox,
+    "Cine Royale": uae_cine_royale,
+    "Galaxy": uae_galaxy,
+    "Truth": uae_truth,
+    "Truth Weekly": uae_truth_weekly,
+    "Shaab": uae_shaab,
+    "Safeer": uae_safeer
 }
 
 def add_cinema_movie_format_date(df):
@@ -271,7 +271,9 @@ def process_pdf(pdf_path, excel_path):
         return
 
     # Call correct module
-    module = module_map[exhibitor]
+    key = f"{cinema_country}_{exhibitor}".strip().lower()
+    module = module_map.get(key)
+
 
     try:
         file_df = module.fetch_data(pdf_path, exhibitor)
