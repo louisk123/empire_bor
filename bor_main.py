@@ -200,14 +200,15 @@ def fix_dates1(file_df, date_format_map):
         .str.strip()
         .str.upper()
     )
-
     file_df["Date"] = file_df.apply(
-        lambda r: to_ddmmyyyy(
-            r["Date"],
-            date_format_map.get(r["_KEY"])
+        lambda r: (
+            to_ddmmyyyy(r["Date"], date_format_map.get(r["_KEY"]))
+            if r["Is Summary"] != 1
+            else r["Date"]
         ),
         axis=1
     )
+
 
     file_df.drop(columns="_KEY", inplace=True)
     return file_df
