@@ -24,6 +24,7 @@ from modules import (
 
 
 module_map = {
+    "Vox":uae_vox,
     "Star Cinemas": uae_star_cinemas,
     "Cinepolis": uae_vox,
     "Vox": uae_vox,
