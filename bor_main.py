@@ -365,7 +365,7 @@ def process_pdf(pdf_path, excel_path):
         )
 
         #file_df=fix_dates(file_df)
-        file_df = fix_dates1(file_df, date_format_map)
+        #file_df = fix_dates1(file_df, date_format_map)
 
         file_df["Format"] = (
             file_df["Format"]
