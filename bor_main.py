@@ -41,7 +41,8 @@ module_map = {
 }
 
 def add_cinema_movie_format_date(df):
-    df["Cinema_Movie_Format_Date"] = (df["Cinema"].astype(str) + " | " + df["Movie Mapped"].astype(str) + " | " + df["Format"].astype(str) + " | " +df["Date"].astype(str))
+    df["Country Code"] = df["Country"].map(country_map).fillna(df["Country"])
+    df["Cinema_Movie_Format_Date"] = (df["Country Code"].astype(str) + " | " + df["Cinema"].astype(str) + " | " + df["Movie Mapped"].astype(str) + " | " + df["Format"].astype(str) + " | " +df["Date"].astype(str))
     return df
 
 
@@ -301,6 +302,25 @@ def process_pdf(pdf_path, excel_path):
         .set_index("KEY")["File Date Format"]
         .to_dict()
     )
+    
+    country_map = {
+    "Lebanon": "LB",
+    "Jordan": "JO",
+    "Iraq": "IQ",
+    "Syria": "SY",
+    "Egypt": "EG",
+    "Ethiopia": "ET",
+    "UAE": "AE",
+    "Kuwait": "KW",
+    "Qatar": "QR",
+    "Bahrain": "BH",
+    "Oman": "OM",
+    "KSA": "SA",
+    "Djibouti": "DJ",
+    "Palestine": "PA",
+}
+
+    
 
 
     
