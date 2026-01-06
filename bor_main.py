@@ -166,52 +166,44 @@ def fix_dates(file_df):
     return file_df
 
 def fix_dates1(file_df, date_format_map):
+    # normalize key used in date_format_map (Name from File)
+    file_df["_KEY"] = file_df["Cinema"].astype(str).str.strip().str.upper()
 
     def to_ddmmyyyy(date_str, fmt):
         if pd.isna(date_str):
             return date_str
 
-        date_str = str(date_str).strip()
+        s = str(date_str).strip()
 
-        try:
-            if fmt == "yyyy-mm-dd":
-                dt = pd.to_datetime(date_str, format="%Y-%m-%d", errors="coerce")
-            elif fmt == "dd/mm/yyyy":
-                dt = pd.to_datetime(date_str, dayfirst=True, errors="coerce")
-            elif fmt == "mm/dd/yyyy":
-                dt = pd.to_datetime(date_str, dayfirst=False, errors="coerce")
-            elif fmt == "dd-mm-yyyy":
-                dt = pd.to_datetime(date_str, format="%d-%m-%Y", errors="coerce")
-            else:
-                return date_str
+        # normalize separator for slash-based formats
+        if fmt in {"dd/mm/yyyy", "mm/dd/yyyy"}:
+            s = s.replace("-", "/")
 
-            if pd.isna(dt):
-                return date_str
+        fmt_map = {
+            "yyyy-mm-dd": "%Y-%m-%d",
+            "dd/mm/yyyy": "%d/%m/%Y",
+            "mm/dd/yyyy": "%m/%d/%Y",
+            "dd-mm-yyyy": "%d-%m-%Y",
+        }
 
-            return dt.strftime("%d/%m/%Y")
+        pyfmt = fmt_map.get(fmt)
+        if not pyfmt:
+            return s
 
-        except Exception:
-            return date_str
+        dt = pd.to_datetime(s, format=pyfmt, errors="coerce")
+        return s if pd.isna(dt) else dt.strftime("%d/%m/%Y")
 
-    # normalize key
-    file_df["_KEY"] = (
-        file_df["Cinema"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
-    file_df["Date"] = file_df.apply(
-        lambda r: (
-            to_ddmmyyyy(r["Date"], date_format_map.get(r["_KEY"]))
-            if r["Is Summary"] != 1
-            else r["Date"]
-        ),
+    # only fix when Is Summary != 1
+    mask = file_df["Is Summary"].fillna(0).astype(int) != 1
+
+    file_df.loc[mask, "Date"] = file_df.loc[mask].apply(
+        lambda r: to_ddmmyyyy(r["Date"], date_format_map.get(r["_KEY"])),
         axis=1
     )
 
-
     file_df.drop(columns="_KEY", inplace=True)
     return file_df
+
 
 
 
