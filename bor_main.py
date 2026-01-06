@@ -165,44 +165,56 @@ def fix_dates(file_df):
     )
     return file_df
 
-def fix_dates1(file_df, date_format_map):
-    # normalize key used in date_format_map (Name from File)
-    file_df["_KEY"] = file_df["Cinema"].astype(str).str.strip().str.upper()
+from datetime import datetime
 
-    def to_ddmmyyyy(date_str, fmt):
-        if pd.isna(date_str):
+def fix_dates1(file_df, date_format_map):
+
+    FORMAT_MAP = {
+        "yyyy-mm-dd": "%Y-%m-%d",
+        "dd/mm/yyyy": "%d/%m/%Y",
+        "mm/dd/yyyy": "%m/%d/%Y",
+        "dd-mm-yyyy": "%d-%m-%Y",
+    }
+
+    def convert(date_str, fmt):
+        if pd.isna(date_str) or fmt not in FORMAT_MAP:
             return date_str
 
         s = str(date_str).strip()
 
-        # normalize separator for slash-based formats
+        # normalize separators ONLY where expected
         if fmt in {"dd/mm/yyyy", "mm/dd/yyyy"}:
             s = s.replace("-", "/")
 
-        fmt_map = {
-            "yyyy-mm-dd": "%Y-%m-%d",
-            "dd/mm/yyyy": "%d/%m/%Y",
-            "mm/dd/yyyy": "%m/%d/%Y",
-            "dd-mm-yyyy": "%d-%m-%Y",
-        }
-
-        pyfmt = fmt_map.get(fmt)
-        if not pyfmt:
+        try:
+            dt = datetime.strptime(s, FORMAT_MAP[fmt])
+            return dt.strftime("%d/%m/%Y")
+        except ValueError:
+            # parsing failed → keep original
             return s
 
-        dt = pd.to_datetime(s, format=pyfmt, errors="coerce")
-        return s if pd.isna(dt) else dt.strftime("%d/%m/%Y")
+    # build lookup key
+    file_df["_KEY"] = (
+        file_df["Cinema"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
 
-    # only fix when Is Summary != 1
+    # apply ONLY to non-summary rows
     mask = file_df["Is Summary"].fillna(0).astype(int) != 1
 
     file_df.loc[mask, "Date"] = file_df.loc[mask].apply(
-        lambda r: to_ddmmyyyy(r["Date"], date_format_map.get(r["_KEY"])),
+        lambda r: convert(
+            r["Date"],
+            date_format_map.get(r["_KEY"])
+        ),
         axis=1
     )
 
     file_df.drop(columns="_KEY", inplace=True)
     return file_df
+
 
 
 
