@@ -11,14 +11,14 @@ from rapidfuzz import process, fuzz
 
 # Import all modules ONCE
 from modules import (
-    vox,
-    galaxy,
-    safeer,
-    shaab,
-    star_cinemas,
-    cine_royale,
-    truth,
-    truth_weekly
+    uae_vox,
+    uae_galaxy,
+    uae_safeer,
+    uae_shaab,
+    uae_star_cinemas,
+    uae_cine_royale,
+    uae_truth,
+    uae_truth_weekly
 )
 
 
