@@ -165,6 +165,54 @@ def fix_dates(file_df):
     )
     return file_df
 
+def fix_dates1(file_df, date_format_map):
+
+    def to_ddmmyyyy(date_str, fmt):
+        if pd.isna(date_str):
+            return date_str
+
+        date_str = str(date_str).strip()
+
+        try:
+            if fmt == "yyyy-mm-dd":
+                dt = pd.to_datetime(date_str, format="%Y-%m-%d", errors="coerce")
+            elif fmt == "dd/mm/yyyy":
+                dt = pd.to_datetime(date_str, dayfirst=True, errors="coerce")
+            elif fmt == "mm/dd/yyyy":
+                dt = pd.to_datetime(date_str, dayfirst=False, errors="coerce")
+            elif fmt == "dd-mm-yyyy":
+                dt = pd.to_datetime(date_str, format="%d-%m-%Y", errors="coerce")
+            else:
+                return date_str
+
+            if pd.isna(dt):
+                return date_str
+
+            return dt.strftime("%d/%m/%Y")
+
+        except Exception:
+            return date_str
+
+    # normalize key
+    file_df["_KEY"] = (
+        file_df["Cinema"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+    file_df["Date"] = file_df.apply(
+        lambda r: to_ddmmyyyy(
+            r["Date"],
+            date_format_map.get(r["_KEY"])
+        ),
+        axis=1
+    )
+
+    file_df.drop(columns="_KEY", inplace=True)
+    return file_df
+
+
 
 
 def process_pdf(pdf_path, excel_path):
@@ -177,7 +225,7 @@ def process_pdf(pdf_path, excel_path):
     mapping_df = pd.read_excel(
         excel_path,
         sheet_name="Cinemas Mapping",
-        usecols=["Name from File", "Line", "Exhibitor", "Country","BOR File",	"BOR Exhibitor"]
+        usecols=["Name from File", "Line", "Exhibitor", "Country","BOR File",	"BOR Exhibitor","File Date Format"]
     )
     movies_df = pd.read_excel(
         excel_path,
@@ -209,6 +257,7 @@ def process_pdf(pdf_path, excel_path):
     .set_index("PDF")["BOR"]
     .to_dict()
     )
+    
 
 
     cinema_df = pd.read_excel(
@@ -237,6 +286,19 @@ def process_pdf(pdf_path, excel_path):
         .set_index("PDF")["BOR Exhibitor"]
         .to_dict()
     )
+
+    date_format_map = (
+        mapping_df
+        .dropna(subset=["Name from File", "File Date Format"])
+        .assign(
+            KEY=lambda d: d["Name from File"].astype(str).str.strip().str.upper()
+        )
+        .set_index("KEY")["File Date Format"]
+        .to_dict()
+    )
+
+
+    
 
  
 
@@ -297,7 +359,9 @@ def process_pdf(pdf_path, excel_path):
             lambda x: map_movie(x, movie_list)
         )
 
-        file_df=fix_dates(file_df)
+        #file_df=fix_dates(file_df)
+        file_df = fix_dates1(file_df, date_format_map)
+
         file_df["Format"] = (
             file_df["Format"]
             .astype(str)
