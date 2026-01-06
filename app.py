@@ -105,6 +105,7 @@ if st.button("Start Processing"):
 
                     # Add combined column (BOR context only)
             df_bor["Cinema_Movie_Format_Date"] = (
+            df_bor["Territory"].astype(str) + " | " +
             df_bor["Theater"].astype(str) + " | " +
             df_bor["Description"].astype(str) + " | " +
             df_bor["Movie Type"].astype(str) + " | " +
