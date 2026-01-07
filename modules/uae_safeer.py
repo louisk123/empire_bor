@@ -125,11 +125,17 @@ def extract_header_info(pdf_path):
             L = ln.upper()
             if "FROM DATE" in L:
                 parts = ln.split()
-                # Example: Screening Period 2025-09-11 TO 2025-09-17
-                d1 = datetime.strptime(parts[3], "%d-%m-%Y").date()
-                d2 = datetime.strptime(parts[9], "%d-%m-%Y").date()
-                week_tag = "Weekly" if (d2 - d1).days > 1 else ""
+            
+                d1 = datetime.strptime(parts[3], "%d-%m-%Y").strftime("%d-%m-%Y")
+                d2 = datetime.strptime(parts[9], "%d-%m-%Y").strftime("%d-%m-%Y")
+            
+                week_tag = "Weekly" if (
+                    datetime.strptime(parts[9], "%d-%m-%Y") -
+                    datetime.strptime(parts[3], "%d-%m-%Y")
+                ).days > 1 else ""
+            
                 break
+
 
     return cinema, week_tag, d1
 
