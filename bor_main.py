@@ -171,11 +171,12 @@ from datetime import datetime
 def fix_dates1(file_df, date_format_map):
 
     FORMAT_MAP = {
-        "yyyy-mm-dd": "%Y-%m-%d",
-        "dd/mm/yyyy": "%d/%m/%Y",
-        "mm/dd/yyyy": "%m/%d/%Y",
-        "dd-mm-yyyy": "%d-%m-%Y",
+        "yyyy-mm-dd": ["%Y-%m-%d"],
+        "dd/mm/yyyy": ["%d/%m/%Y", "%d/%m/%y"],
+        "mm/dd/yyyy": ["%m/%d/%Y", "%m/%d/%y"],
+        "dd-mm-yyyy": ["%d-%m-%Y", "%d-%m-%y"],
     }
+
 
     def convert(date_str, fmt):
         if pd.isna(date_str) or fmt not in FORMAT_MAP:
