@@ -122,6 +122,7 @@ def normalize_title(s: str) -> str:
         if t.startswith("el") and len(t) > 4:
             t = t[2:]
         tokens.append(t)
+    return " ".join(tokens)
 
 
 def map_movie(name, movie_list, threshold=80):
