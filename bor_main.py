@@ -165,38 +165,35 @@ def fix_dates(file_df):
     )
     return file_df
 
-from datetime import datetime
+
 
 def fix_dates1(file_df, date_format_map):
 
     FORMAT_MAP = {
-        "yyyy-mm-dd": ["%Y-%m-%d"],
+        "yyyy-mm-dd": ["%Y-%m-%d", "%y-%m-%d"],
         "dd/mm/yyyy": ["%d/%m/%Y", "%d/%m/%y"],
         "mm/dd/yyyy": ["%m/%d/%Y", "%m/%d/%y"],
         "dd-mm-yyyy": ["%d-%m-%Y", "%d-%m-%y"],
     }
 
-    
-    def convert(date_str, fmt):
-        if pd.isna(date_str) or fmt not in FORMAT_MAP:
+    def convert(date_str, current_format):
+        if pd.isna(date_str):
             return date_str
-    
+
+        if current_format not in FORMAT_MAP:
+            return date_str
+
         s = str(date_str).strip()
-    
-        if fmt in {"dd/mm/yyyy", "mm/dd/yyyy"}:
-            s = s.replace("-", "/")
-    
-        for f in FORMAT_MAP[fmt]:
+
+        for fmt in FORMAT_MAP[current_format]:
             try:
-                dt = datetime.strptime(s, f)
+                dt = datetime.strptime(s, fmt)
                 return dt.strftime("%d/%m/%Y")
             except ValueError:
-                continue
-    
+                pass
+
         return s
 
-
-    # build lookup key
     file_df["_KEY"] = (
         file_df["Cinema"]
         .astype(str)
@@ -204,7 +201,6 @@ def fix_dates1(file_df, date_format_map):
         .str.upper()
     )
 
-    # apply ONLY to non-summary rows
     mask = file_df["Is Summary"].fillna(0).astype(int) != 1
 
     file_df.loc[mask, "Date"] = file_df.loc[mask].apply(
@@ -214,6 +210,9 @@ def fix_dates1(file_df, date_format_map):
         ),
         axis=1
     )
+
+    file_df.drop(columns="_KEY", inplace=True)
+    return file_df
 
     file_df.drop(columns="_KEY", inplace=True)
     return file_df
@@ -388,7 +387,7 @@ def process_pdf(pdf_path, excel_path):
         )
 
         #file_df=fix_dates(file_df)
-        #file_df = fix_dates1(file_df, date_format_map)
+        file_df = fix_dates1(file_df, date_format_map)
 
         file_df["Format"] = (
             file_df["Format"]
