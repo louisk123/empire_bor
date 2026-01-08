@@ -128,12 +128,10 @@ def map_movie(name, movie_list, threshold=80):
     if not name or pd.isna(name):
         return name
 
-    name_norm = normalize_title(name)
+    # build normalized lookup ONCE per call
+    norm_to_original = {normalize_title(m): m for m in movie_list}
 
-    # Build normalized lookup once per call
-    norm_to_original = {
-        normalize_title(m): m for m in movie_list
-    }
+    name_norm = normalize_title(name)
 
     match = process.extractOne(
         name_norm,
@@ -144,7 +142,6 @@ def map_movie(name, movie_list, threshold=80):
     if match and match[1] >= threshold:
         return norm_to_original[match[0]]
 
-    # If confidence is low, keep original
     return name
 
 def screen_rule(g):
