@@ -69,7 +69,7 @@ def extract_header_info(pdf_path):
         text = pdf.pages[0].extract_text() or ""
         lines = [l.strip() for l in text.splitlines() if l.strip()]
         if lines:
-            cinema = lines[0]
+            cinema = lines[0].upper() + " " + lines[1].upper()
     week_tag = "weekly"
 
     return cinema, week_tag
