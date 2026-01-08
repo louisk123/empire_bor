@@ -100,12 +100,30 @@ def get_sheet_name(row):
 def normalize_title(s):
     if not s or pd.isna(s):
         return ""
-    s = s.lower()
-    s = re.sub(r"\[.*?\]", "", s)      # remove [Arabic], [Japanese], etc.
-    s = re.sub(r"[^a-z0-9 ]", " ", s)  # remove punctuation
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
 
+    s = str(s).lower()
+
+    # remove language tags in [] and ()
+    s = re.sub(r"\[.*?\]|\(.*?\)", " ", s)
+
+    # replace 7 -> h ONLY when it behaves like a letter (start of token or inside token)
+    s = re.sub(r"(?:(?<=\w)7(?=\w))|(?:\b7(?=[a-z]))", "h", s)
+
+    # normalize fel/fi
+    s = re.sub(r"\bfel\b", "fi", s)
+
+    # remove punctuation
+    s = re.sub(r"[^a-z0-9 ]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+
+    # token cleanup: remove leading "el" in arabic-translit tokens (elkhayal -> khayal)
+    tokens = []
+    for t in s.split():
+        if t.startswith("el") and len(t) > 4:
+            t = t[2:]
+        tokens.append(t)
+
+    return " ".join(tokens)
 
 def map_movie(name, movie_list, threshold=80):
     if not name or pd.isna(name):
