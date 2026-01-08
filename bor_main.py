@@ -97,7 +97,7 @@ def get_sheet_name(row):
         return "Weekly BOR - summary"
     return "Daily BOR"
 
-def normalize_title(s):
+def normalize_title(s: str) -> str:
     if not s or pd.isna(s):
         return ""
 
@@ -123,7 +123,6 @@ def normalize_title(s):
             t = t[2:]
         tokens.append(t)
 
-    return " ".join(tokens)
 
 def map_movie(name, movie_list, threshold=80):
     if not name or pd.isna(name):
