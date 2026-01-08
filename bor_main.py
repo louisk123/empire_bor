@@ -176,23 +176,25 @@ def fix_dates1(file_df, date_format_map):
         "dd-mm-yyyy": ["%d-%m-%Y", "%d-%m-%y"],
     }
 
-
+    
     def convert(date_str, fmt):
         if pd.isna(date_str) or fmt not in FORMAT_MAP:
             return date_str
-
+    
         s = str(date_str).strip()
-
-        # normalize separators ONLY where expected
+    
         if fmt in {"dd/mm/yyyy", "mm/dd/yyyy"}:
             s = s.replace("-", "/")
+    
+        for f in FORMAT_MAP[fmt]:
+            try:
+                dt = datetime.strptime(s, f)
+                return dt.strftime("%d/%m/%Y")
+            except ValueError:
+                continue
+    
+        return s
 
-        try:
-            dt = datetime.strptime(s, FORMAT_MAP[fmt])
-            return dt.strftime("%d/%m/%Y")
-        except ValueError:
-            # parsing failed → keep original
-            return s
 
     # build lookup key
     file_df["_KEY"] = (
