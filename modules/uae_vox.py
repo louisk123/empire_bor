@@ -124,12 +124,14 @@ def extract_first_page(pdf_path):
             break
     '''
 
-    dates = re.findall(r"\d{1,2}/\d{1,2}/\d{2,4}", "\n".join(lines[:10]))
-    date_value = dates[0] if dates else ""
+    #dates = re.findall(r"\d{1,2}/\d{1,2}/\d{2,4}", "\n".join(lines[:10]))
+    dates = re.findall(r"\d{1,2}[-/]\d{1,2}[-/]\d{2,4}", "\n".join(lines[:10]))
+
+    date_value = dates[0].replace("-", "/") if dates else ""
     if len(dates) >= 2:
-        d1 = datetime.strptime(dates[0], "%d/%m/%Y")
-        date_value=dates[0]
-        d2 = datetime.strptime(dates[1], "%d/%m/%Y")
+        d1 = datetime.strptime(dates[0].replace("-", "/"), "%d/%m/%Y")
+        date_value=dates[0].replace("-", "/")
+        d2 = datetime.strptime(dates[1].replace("-", "/"), "%d/%m/%Y"
         week_type = "weekly" if (d2 - d1).days > 1 else ""
 
     # -------------------------------
@@ -288,7 +290,8 @@ def extract_page2_details(pdf_path, movie_list):
                     "Empire(",
                     "Avg Ticket Price",
                     "Empire International",
-                    "EMPIRE ENTERTAINMENT"
+                    "EMPIRE ENTERTAINMENT",
+                    "Empire International Gulf",
                 ]
 
                 if line.strip() == "Empire":
