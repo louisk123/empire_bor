@@ -131,7 +131,7 @@ def extract_first_page(pdf_path):
     if len(dates) >= 2:
         d1 = datetime.strptime(dates[0].replace("-", "/"), "%d/%m/%Y")
         date_value=dates[0].replace("-", "/")
-        d2 = datetime.strptime(dates[1].replace("-", "/"), "%d/%m/%Y"
+        d2 = datetime.strptime(dates[1].replace("-", "/"), "%d/%m/%Y")
         week_type = "weekly" if (d2 - d1).days > 1 else ""
 
     # -------------------------------
