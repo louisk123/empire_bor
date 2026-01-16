@@ -107,16 +107,22 @@ def extract_page2_details(pdf_path):
             lines = text.splitlines()
             lines = lines[1:] #remove first 1 line
 
-
+            skip=0
             for line in lines:
  
-
+                if skip==1:
+                  if stripped.replace(" ", "").replace(".", "").isdigit():
+                    skip = 0
+                  continue
 
                 stripped = line.strip()
+                if stripped == "Totals":
+                    skip=1
+                    continue
+                
 
                 skip_phrases = [
                     "Distributors Report by Film",
-                    "Totals",
                     "Ticket Type",
                     "Distributors Report by Film",
                     "C:\VISTA\ReportFiles",
@@ -143,11 +149,9 @@ def extract_page2_details(pdf_path):
                     continue
 
                 #Detect movie name and format
-                print(stripped)
                 mo = re.search(r"Film\s*:\s*([A-Z0-9 ()\-:'&]+?)\s*Format\s*:\s*([A-Z0-9]+)",stripped,re.IGNORECASE)
 
                 if mo:
-                    print("founf")
                     current_movie = mo.group(1).strip()
                     fmt = mo.group(2).strip().upper()
                     current_format = "2D" if fmt == "DEFAULT" else fmt
