@@ -319,7 +319,11 @@ def extract_page2_details(pdf_path, movie_list):
 
                 # Date detection
                 #print("Date Detection Stated")
-                m = re.search(r"\b(\d{1,2}/\d{1,2}/\d{2,4})\b", stripped)
+                #m = re.search(r"\b(\d{1,2}/\d{1,2}/\d{2,4})\b", stripped)
+                m = re.search(r"\b(\d{1,2}/\d{1,2}/\d{2,4}|\d{1,2}-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{2,4})\b",
+                    stripped,
+                  re.IGNORECASE
+                )
                 if m:
                     #current_date = normalize_date(m.group(0))
                     current_date = m.group(0) 
