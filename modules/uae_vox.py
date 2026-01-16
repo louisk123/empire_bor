@@ -279,12 +279,12 @@ def extract_page2_details(pdf_path, movie_list):
             skip=1
             for line in lines:
                 #print(line)
-                if "Split Movie Format".lower() in line.lower():
-                  skip=0
-                  continue
+                #if "Split Movie Format".lower() in line.lower():
+                #  skip=0
+                #  continue
 
-                if skip ==1:
-                  continue
+                #if skip ==1:
+                #  continue
 
 
                 stripped = line.strip()
@@ -302,6 +302,8 @@ def extract_page2_details(pdf_path, movie_list):
                     "Empire International",
                     "EMPIRE ENTERTAINMENT",
                     "Empire International Gulf",
+                    "Split Movie Format",
+                    "Ticket Prices Admits"
                 ]
 
                 if line.strip() == "Empire":
@@ -342,7 +344,7 @@ def extract_page2_details(pdf_path, movie_list):
                         current_screen = stripped.replace(mv, "").strip()
                         ticket_class=""  #reset ticket_class
                         current_format= "2D" #reset current formal
-                        skip=2 #skips the next 2 linese after the movei title
+                        #skip=2 #skips the next 2 linese after the movei title
                         #print("movie detected")
 
                         #print(current_screen)
