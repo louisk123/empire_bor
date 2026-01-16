@@ -25,6 +25,16 @@ OUTPUT_COLUMNS_PAGE = [
     "File", "Exhibitor","Cinema", "Week Type", "Extraction Date","Movie","Date","Time", "Screen" , "Format", "Ticket Type","Admits","Gross","Net", "Comp" ,"Is Summary",   "Summary Sessions"]
 
 
+# chekc if screen is MAX then format should be MAX 2D or MAX 3D if not already detected
+def build_max_label(var1, var2):
+    # check if var1 starts with MAX (optionally followed by space and digits)
+    if re.match(r'^MAX\s*\d*$', var1, re.IGNORECASE):
+        if var2.upper() in ['2D', '3D']:
+            print(f"MAX {var2.upper()}")
+            return f"MAX {var2.upper()}"
+    return var2
+
+
 # -------------------------------
 # Number cleaner — converts numeric strings into floats
 # Handles empty strings safely
@@ -352,6 +362,7 @@ def extract_page2_details(pdf_path, movie_list):
 
                 if best_match:
                     current_format = best_match
+                    current_format=build_max_label(current_screen,current_format)  # check if screen is MX and convert format to 2D ror 3D
 
 
 
