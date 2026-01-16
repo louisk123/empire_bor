@@ -18,7 +18,8 @@ from modules import (
     uae_star_cinemas,
     uae_cine_royale,
     uae_truth,
-    uae_truth_weekly
+    uae_truth_weekly,
+    kuwait_sky
 )
 
 
@@ -40,6 +41,7 @@ module_map = {
     "Kuwait Vox": uae_vox,
     "Kuwait Hamra": uae_vox,
     "Kuwait Andalus": uae_vox,
+    "Kuwait Sky":kuwait_sky
 }
 
 def add_cinema_movie_format_date(df,country_map):
