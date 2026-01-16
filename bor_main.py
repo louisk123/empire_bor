@@ -193,7 +193,8 @@ def fix_dates1(file_df, date_format_map):
         "mm/dd/yyyy": ["%m/%d/%Y", "%m/%d/%y"],
         "dd-mm-yyyy": ["%d-%m-%Y", "%d-%m-%y"],
         "dd/mon/yyyy": ["%d/%b/%Y", "%d/%B/%Y"],
-        "dd-mon-yyyy": ["%d-%b-%Y", "%d-%B-%Y"] 
+        "dd/mon/yyyy": ["%d/%b/%Y", "%d/%b/%y", "%d/%B/%Y", "%d/%B/%y"],
+        "dd-mon-yyyy": ["%d-%b-%Y", "%d-%b-%y", "%d-%B-%Y", "%d-%B-%y"]
     }
 
     def convert(date_str, current_format):
