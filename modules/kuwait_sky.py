@@ -200,7 +200,7 @@ def extract_page2_details(pdf_path):
                 if not is_numeric_tail:
                     continue
 
-                admits, netprice, net, gross, grossprice = numeric_tail
+                admits, netprice, net, grossprice, gross = numeric_tail
 
 
 
