@@ -36,7 +36,10 @@ module_map = {
     "UAE Truth": uae_truth,
     "UAE Truth Weekly": uae_truth_weekly,
     "UAE Shaab": uae_shaab,
-    "UAE Safeer": uae_safeer
+    "UAE Safeer": uae_safeer,
+    "Kuwait Vox": uae_vox,
+    "Kuwait Hamra": uae_vox,
+    "Kuwait Andalus": uae_vox,
 }
 
 def add_cinema_movie_format_date(df,country_map):
