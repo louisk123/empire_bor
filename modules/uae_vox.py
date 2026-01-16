@@ -369,6 +369,12 @@ def extract_page2_details(pdf_path, movie_list):
                 if best_match:
                     current_format = best_match
                     current_format=build_max_label(current_screen,current_format)  # check if screen is MX and convert format to 2D ror 3D
+                    #override curre format if screen name matches one of the formats
+                    formats_set = {f.upper() for f in formats}
+                    if screen and screen.upper() in formats_set:
+                          current_format = screen
+
+                    
 
 
 
