@@ -133,6 +133,8 @@ def extract_page2_details(pdf_path,cinema_map,extract_date,current_date):
 
                 #Detect movie name and format
                 parts = stripped.split()
+                if parts and parts[-1].isdigit():  # skip if format i there but empty admits
+                  continue
                 if len(parts) >= 4 and re.match(r"^KD\d{1,3}(?:,\d{3})*(?:\.\d+)?$", parts[-1]):
                     if parts[0]=="Total":
                       continue
