@@ -127,7 +127,7 @@ def extract_page2_details(pdf_path,cinema_map,extract_date,current_date):
 
                 #detect cinema
                 key = stripped.strip()
-                if key.upper in cinema_map:
+                if key.upper() in cinema_map:
                   current_cinema = key
                   continue
 
