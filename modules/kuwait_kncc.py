@@ -63,7 +63,7 @@ def extract_first_page(pdf_path):
 def extract_page2_details(pdf_path,cinema_map,extract_date,current_date):
 
     page2_rows = []
-    cinema_totals = {f"{v} Total" for v in cinema_map.keys()}
+    cinema_totals = {f"{v} TOTAL" for v in cinema_map.keys()}
 
 
     with pdfplumber.open(pdf_path) as pdf:
@@ -120,14 +120,14 @@ def extract_page2_details(pdf_path,cinema_map,extract_date,current_date):
 
                 if stripped in is_phrases:
                     continue
-                if any(ct in stripped for ct in cinema_totals):
+                if any(ct.upper() in stripped.upper() for ct in cinema_totals):
                     continue
 
 
 
                 #detect cinema
                 key = stripped.strip()
-                if key in cinema_map:
+                if key.upper in cinema_map:
                   current_cinema = key
                   continue
 
