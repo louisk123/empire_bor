@@ -389,7 +389,7 @@ def process_pdf(pdf_path, excel_path):
     try:
         if exhibitor=="KNCC":
             file_df = module.fetch_data(pdf_path, exhibitor,cinema_map)
-        else
+        else:
             file_df = module.fetch_data(pdf_path, exhibitor)
 
         if file_df is None or len(file_df) == 0:
