@@ -19,7 +19,8 @@ from modules import (
     uae_cine_royale,
     uae_truth,
     uae_truth_weekly,
-    kuwait_sky
+    kuwait_sky,
+    kuwait_kncc
 )
 
 
@@ -386,7 +387,10 @@ def process_pdf(pdf_path, excel_path):
 
 
     try:
-        file_df = module.fetch_data(pdf_path, exhibitor)
+        if exhibitor=="KNCC":
+            file_df = module.fetch_data(pdf_path, exhibitor,cinema_map)
+        else
+            file_df = module.fetch_data(pdf_path, exhibitor)
 
         if file_df is None or len(file_df) == 0:
             print("Empty df, skipping:", pdf_path)
