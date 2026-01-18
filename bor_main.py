@@ -1,6 +1,7 @@
 
 
 import pdfplumber
+import os
 import pandas as pd
 import re
 from datetime import datetime
@@ -196,7 +197,6 @@ def fix_dates1(file_df, date_format_map):
         "dd/mm/yyyy": ["%d/%m/%Y", "%d/%m/%y"],
         "mm/dd/yyyy": ["%m/%d/%Y", "%m/%d/%y"],
         "dd-mm-yyyy": ["%d-%m-%Y", "%d-%m-%y"],
-        "dd/mon/yyyy": ["%d/%b/%Y", "%d/%B/%Y"],
         "dd/mon/yyyy": ["%d/%b/%Y", "%d/%b/%y", "%d/%B/%Y", "%d/%B/%y"],
         "dd-mon-yyyy": ["%d-%b-%Y", "%d-%b-%y", "%d-%B-%Y", "%d-%B-%y"]
     }
@@ -240,6 +240,32 @@ def fix_dates1(file_df, date_format_map):
     return file_df
 
 
+
+def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and treat differently
+    ext = os.path.splitext(file_path)[1].lower()
+    text=""
+    # PDF
+    if ext == ".pdf":
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                text = pdf.pages[0].extract_text() or ""
+                return text.split("\n")[0].strip()
+        except:
+            return None
+
+    # EXCEL
+    elif ext in [".xlsx", ".xls"]:
+        try:
+            df = pd.read_excel(file_path, header=None)
+            cell_value = str(df.iloc[6, 1]).strip().upper()
+            if cell_value in cinema_map:
+                return cinema_map[cell_value]   # matched → return mapped value
+            else:
+                return None                     # not found
+        except:
+            return None
+
+    return None
 
 
 
@@ -346,18 +372,11 @@ def process_pdf(pdf_path, excel_path):
     
 
 
-    
 
- 
-
-
-    try:
-        with pdfplumber.open(pdf_path) as pdf:
-            text = pdf.pages[0].extract_text() or ""
-            first_line = text.split("\n")[0].strip()
-    except:
-        # print("Could not read:", pdf_path)
+    first_line = get_first_line(pdf_path,cinema_map)
+    if first_line is None:
         return
+
 
     # Find matching cinema
     cinema_found = None
