@@ -260,7 +260,7 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
             df = pd.read_excel(file_path, header=None)
             cell_value = str(df.iloc[6, 1]).strip()
             st.write(cinema_map)
-            if cell_value in cinema_map:
+            if cell_value.upper() in cinema_map:
                 st.write("retunring cell value")
                 return cell_value   # matched → return mapped value
             else:
