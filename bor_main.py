@@ -373,9 +373,7 @@ def process_pdf(pdf_path, excel_path):
     
 
 
-    st.write(pdf_path)
     first_line = get_first_line(pdf_path,cinema_map)
-    st.write(first_line)
 
     if first_line is None:
         return
@@ -398,6 +396,7 @@ def process_pdf(pdf_path, excel_path):
             cinema_found = cinema_name
             cinema_country = row["Country"]
             exhibitor = row["Exhibitor"]
+            st.write("cinemae foud")
             break
 
     if cinema_found is None:
