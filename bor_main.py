@@ -375,7 +375,7 @@ def process_pdf(pdf_path, excel_path):
 
 
     first_line = get_first_line(pdf_path,cinema_map)
-    st.write(first_line)
+    #st.write(first_line)
 
     if first_line is None:
         return
