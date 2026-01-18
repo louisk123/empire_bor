@@ -4,6 +4,7 @@ import tempfile
 import os
 from openpyxl import load_workbook
 from bor_main import process_pdf  
+from bor_main import process_excel 
 
 st.title("Empire BOR Extraction System")
 st.write("Upload one Excel file, multiple PDF files, and optional BOR Excel files.")
@@ -44,7 +45,7 @@ if st.button("Start Processing"):
         st.stop()
 
     if not pdf_files:
-        st.error("Please upload at least one PDF.")
+        st.error("Please upload at least one file.")
         st.stop()
 
     # Save Excel temporarily
@@ -67,7 +68,10 @@ if st.button("Start Processing"):
         temp_pdf.close()
         temp_pdf_path = temp_pdf.name
 
-        process_pdf(temp_pdf_path, temp_excel_path)
+        if suffix == ".pdf":
+            process_pdf(temp_path, temp_excel_path)
+        else:
+            process_excel(temp_path, temp_excel_path)
 
         os.remove(temp_pdf_path)
         progress.progress(idx / total)
