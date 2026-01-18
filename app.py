@@ -68,10 +68,7 @@ if st.button("Start Processing"):
         temp_pdf.close()
         temp_pdf_path = temp_pdf.name
 
-        if suffix == ".pdf":
-            process_pdf(temp_path, temp_excel_path)
-        else:
-            process_excel(temp_path, temp_excel_path)
+        process_pdf(temp_path, temp_excel_path)
 
         os.remove(temp_pdf_path)
         progress.progress(idx / total)
