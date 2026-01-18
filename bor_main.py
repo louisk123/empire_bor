@@ -21,7 +21,8 @@ from modules import (
     uae_truth,
     uae_truth_weekly,
     kuwait_sky,
-    kuwait_kncc
+    kuwait_kncc,
+    kuwait_ozone
 )
 
 
