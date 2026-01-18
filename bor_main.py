@@ -392,12 +392,13 @@ def process_pdf(pdf_path, excel_path):
             print(first_line_upper)
 
         cinema_name = str(row["Name from File"]).upper()
-        st.write(cinema_name)
+        st.write(first_line_upper)
         if cinema_name in first_line_upper:
+            st.write("cinemae foud")
             cinema_found = cinema_name
             cinema_country = row["Country"]
             exhibitor = row["Exhibitor"]
-            st.write("cinemae foud")
+            
             break
 
     if cinema_found is None:
