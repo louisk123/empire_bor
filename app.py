@@ -62,7 +62,8 @@ if st.button("Start Processing"):
     total = len(pdf_files)
 
     for idx, pdf in enumerate(pdf_files, start=1):
-        temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        suffix = os.path.splitext(pdf.name)[1].lower()
+        temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
         temp_pdf.write(pdf.read())
         temp_pdf.close()
         temp_pdf_path = temp_pdf.name
