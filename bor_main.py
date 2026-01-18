@@ -260,7 +260,7 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
             df = pd.read_excel(file_path, header=None)
             cell_value = str(df.iloc[6, 1]).strip()
             if cell_value in cinema_map:
-                return cinema_map[cell_value]   # matched → return mapped value
+                return cell_value# matched → return mapped value
             else:
                 return None                     # not found
         except:
@@ -375,6 +375,8 @@ def process_pdf(pdf_path, excel_path):
 
 
     first_line = get_first_line(pdf_path,cinema_map)
+    st.write(first_line)
+
     if first_line is None:
         return
 
