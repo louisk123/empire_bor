@@ -20,8 +20,8 @@ excel_file = st.file_uploader(
 # UPLOAD PDF FILES
 # --------------------------
 pdf_files = st.file_uploader(
-    "Upload PDF Files",
-    type=["pdf"],
+    "Upload  Files",
+    type=["pdf","xlsx"],
     accept_multiple_files=True
 )
 
