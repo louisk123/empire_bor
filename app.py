@@ -4,7 +4,6 @@ import tempfile
 import os
 from openpyxl import load_workbook
 from bor_main import process_pdf  
-from bor_main import process_excel 
 
 st.title("Empire BOR Extraction System")
 st.write("Upload one Excel file, multiple PDF files, and optional BOR Excel files.")
