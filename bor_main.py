@@ -257,12 +257,11 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
     # EXCEL
     elif ext in [".xlsx", ".xls"]:
         try:
-            st.write("this is excel")
             df = pd.read_excel(file_path, header=None)
             cell_value = str(df.iloc[6, 1]).strip()
-            st.write("cell value", cell_value)
             if cell_value in cinema_map:
-                return cell_value# matched → return mapped value
+                st.write("retunring cell value")
+                return cell_value   # matched → return mapped value
             else:
                 return None                     # not found
         except:
