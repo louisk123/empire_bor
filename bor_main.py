@@ -390,6 +390,7 @@ def process_pdf(pdf_path, excel_path):
 
     for _, row in mapping_df.iterrows():
         cinema_name = str(row["Name from File"]).upper()
+        st.write(cinema_name)
         if cinema_name == first_line_upper:
             st.write("cinemae foud")
             cinema_found = cinema_name
