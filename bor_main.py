@@ -386,17 +386,15 @@ def process_pdf(pdf_path, excel_path):
     first_line_upper = first_line.upper()
     if first_line_upper == "AL MARIAH MALL ABU DHABHI":
         first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
-    st.write(repr(first_line_upper))
+
 
     for _, row in mapping_df.iterrows():
         cinema_name = str(row["Name from File"]).upper()
-        st.write(repr(cinema_name))
         if cinema_name == first_line_upper:
-            st.write("cinemae foud")
+            st.write(cinema_name)
             cinema_found = cinema_name
             cinema_country = row["Country"]
             exhibitor = row["Exhibitor"]
-            
             break
 
     if cinema_found is None:
@@ -405,6 +403,7 @@ def process_pdf(pdf_path, excel_path):
 
     # Call correct module
     key = f"{cinema_country} {exhibitor}".strip()
+    st.write(key)
     module = module_map.get(key)
 
 
