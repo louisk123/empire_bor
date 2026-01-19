@@ -147,7 +147,8 @@ def map_movie(name, movie_list, threshold=80):
     match = process.extractOne(
         name_norm,
         norm_to_original.keys(),
-        scorer=fuzz.token_set_ratio
+        #scorer=fuzz.token_set_ratio
+        scorer=fuzz.partial_token_set_ratio
     )
 
     if match and match[1] >= threshold:
