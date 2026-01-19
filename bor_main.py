@@ -384,15 +384,13 @@ def process_pdf(pdf_path, excel_path):
     cinema_country = None
     exhibitor = None
     first_line_upper = first_line.upper()
+    if first_line_upper == "AL MARIAH MALL ABU DHABHI":
+        first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
+    st.write("first_line_upper",first_line_upper)
 
     for _, row in mapping_df.iterrows():
-
-        if first_line_upper == "AL MARIAH MALL ABU DHABHI":
-            first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
-            print(first_line_upper)
-
         cinema_name = str(row["Name from File"]).upper()
-        if cinema_name in first_line_upper:
+        if cinema_name == first_line_upper:
             st.write("cinemae foud")
             cinema_found = cinema_name
             cinema_country = row["Country"]
