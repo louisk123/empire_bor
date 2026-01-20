@@ -254,6 +254,8 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
         try:
             with pdfplumber.open(file_path) as pdf:
                 text = pdf.pages[0].extract_text() or ""
+                text=text.replace("Distributors by Film and Ticket Type", "")
+                st.write(text)
                 return text.split("\n")[0].strip()
         except:
             return None
