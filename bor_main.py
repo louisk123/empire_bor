@@ -7,6 +7,9 @@ import re
 from datetime import datetime
 from openpyxl import load_workbook
 from rapidfuzz import process, fuzz
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 
