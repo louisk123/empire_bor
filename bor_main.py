@@ -259,7 +259,7 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
                     .replace("Distributors by Film and Ticket Type", "")
                     .strip()
                 )
-                st.write(text)
+                #st.write(text)
             return text
         except:
             return None
