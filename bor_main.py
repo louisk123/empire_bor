@@ -11,7 +11,11 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+@st.cache_resource
+def load_model():
+    return SentenceTransformer("all-MiniLM-L6-v2")
 
+model = load_model()
 
 # Import all modules ONCE
 from modules import (
@@ -161,6 +165,26 @@ def map_movie(name, movie_list, threshold=80):
 
     if match and match[1] >= threshold:
         return norm_to_original[match[0]]
+
+    return name
+
+def map_movie1(name, movie_list, threshold=0.65):
+
+    if not name or not movie_list:
+        return name
+
+    # Encode input + catalog
+    name_vec = model.encode([name], normalize_embeddings=True)
+    catalog_vecs = model.encode(movie_list, normalize_embeddings=True)
+
+    # Cosine similarity
+    sims = cosine_similarity(name_vec, catalog_vecs)[0]
+
+    best_idx = int(np.argmax(sims))
+    best_score = sims[best_idx]
+
+    if best_score >= threshold:
+        return movie_list[best_idx]
 
     return name
 
@@ -444,7 +468,7 @@ def process_pdf(pdf_path, excel_path):
         file_df["Country"] = cinema_country
         
         file_df["Movie Mapped"] = file_df["Movie"].apply(
-            lambda x: map_movie(x, movie_list)
+            lambda x: map_movie1(x, movie_list)
         )
 
         #file_df=fix_dates(file_df)
