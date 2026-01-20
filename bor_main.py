@@ -22,7 +22,8 @@ from modules import (
     uae_truth_weekly,
     kuwait_sky,
     kuwait_kncc,
-    kuwait_ozone
+    kuwait_ozone,
+    kuwait_ozone_weekly
 )
 
 
@@ -46,7 +47,8 @@ module_map = {
     "Kuwait Andalus": uae_vox,
     "Kuwait Sky":kuwait_sky,
     "Kuwait KNCC":kuwait_kncc,
-    "Kuwait Ozone":kuwait_ozone
+    "Kuwait Ozone":kuwait_ozone,
+    "Kuwait Ozone Weekly": kuwait_ozone_weekly
 }
 
 def add_cinema_movie_format_date(df,country_map):
