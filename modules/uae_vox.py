@@ -203,6 +203,7 @@ def extract_first_page(pdf_path):
             for n in range(4, 0, -1):  # try length 4, 3, 2, 1
                 if len(the_split) >= n:
                     candidate = " ".join(the_split[-n:])
+                    st.write(candidate)
                     if candidate.upper() in formats:
                         movie_format = candidate
                         movie_name_tokens = the_split[:-n]
