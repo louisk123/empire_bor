@@ -48,7 +48,10 @@ module_map = {
     "Kuwait Sky":kuwait_sky,
     "Kuwait KNCC":kuwait_kncc,
     "Kuwait Ozone":kuwait_ozone,
-    "Kuwait Ozone Weekly": kuwait_ozone_weekly
+    "Kuwait Ozone Weekly": kuwait_ozone_weekly,
+    "Qatar Vox":uae_vox,
+    "Qatar Novo":uae_vox
+    
 }
 
 def add_cinema_movie_format_date(df,country_map):
