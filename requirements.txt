@@ -5,3 +5,6 @@ openpyxl
 PyPDF2
 regex
 rapidfuzz
+sentence-transformers
+scikit-learn
+numpy
