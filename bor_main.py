@@ -30,7 +30,8 @@ from modules import (
     kuwait_sky,
     kuwait_kncc,
     kuwait_ozone,
-    kuwait_ozone_weekly
+    kuwait_ozone_weekly,
+    qatar_qbc
 )
 
 
@@ -57,7 +58,8 @@ module_map = {
     "Kuwait Ozone":kuwait_ozone,
     "Kuwait Ozone Weekly": kuwait_ozone_weekly,
     "Qatar Vox":uae_vox,
-    "Qatar Novo":uae_vox
+    "Qatar Novo":uae_vox,
+    "Qatar QBC":qatar_qbc
     
 }
 
