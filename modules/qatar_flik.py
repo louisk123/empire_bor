@@ -85,9 +85,6 @@ def extract_page2_details(pdf_path):
         current_date=""
         current_format = "2D"
         ticket_class=""
-        admits = None
-        gross = None
-        net = None
         screen_type = None
 
   
@@ -99,7 +96,9 @@ def extract_page2_details(pdf_path):
             lines = lines[6:] #remove first 6 lines
 
             for line in lines:
-
+                admits = None
+                gross = None
+                net = None
                 stripped = line.strip()
 
                 skip_phrases = [
