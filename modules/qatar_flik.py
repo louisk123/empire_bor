@@ -172,6 +172,7 @@ def extract_page2_details(pdf_path):
                 if len(parts) == 3 and all(is_number(p) for p in parts):
                     gross = clean_num(parts[-1])
                     admits = clean_num(parts[-3])
+                    net=gross
 
 
 
