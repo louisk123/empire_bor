@@ -31,7 +31,8 @@ from modules import (
     kuwait_kncc,
     kuwait_ozone,
     kuwait_ozone_weekly,
-    qatar_qbc
+    qatar_qbc,
+    qatar_flik
 )
 
 
@@ -59,7 +60,8 @@ module_map = {
     "Kuwait Ozone Weekly": kuwait_ozone_weekly,
     "Qatar Vox":uae_vox,
     "Qatar Novo":uae_vox,
-    "Qatar QBC":qatar_qbc
+    "Qatar QBC":qatar_qbc,
+    "Qatar Flik":qatar_flik
     
 }
 
@@ -285,16 +287,21 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
     if ext == ".pdf":
         try:
             with pdfplumber.open(file_path) as pdf:
-                text = pdf.pages[0].extract_text() or ""
-                text = (
-                    text.split("\n")[0]
-                    .replace("Distributors by Film and Ticket Type", "")
-                    .strip()
-                )
-                #st.write(text)
-            return text
-        except:
+                page_text = pdf.pages[0].extract_text() or ""
+                lines = [l.strip() for l in page_text.split("\n") if l.strip()]
+    
+                text = lines[0].replace(
+                    "Distributors by Film and Ticket Type", ""
+                ).strip()
+    
+                if text == "Ticket Types Per Title" and len(lines) > 3:
+                    text = lines[3].replace("Selection", "").strip()
+    
+                return text
+    
+        except Exception:
             return None
+
 
     # EXCEL
     elif ext in [".xlsx", ".xls"]:
