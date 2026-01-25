@@ -32,7 +32,8 @@ from modules import (
     kuwait_ozone,
     kuwait_ozone_weekly,
     qatar_qbc,
-    qatar_flik
+    qatar_flik,
+    
 )
 
 
@@ -61,7 +62,12 @@ module_map = {
     "Qatar Vox":uae_vox,
     "Qatar Novo":uae_vox,
     "Qatar QBC":qatar_qbc,
-    "Qatar Flik":qatar_flik
+    "Qatar Flik":qatar_flik,
+    "Bahrain Vox": uae_vox,
+    "Bahrain Reel": uae_vox,
+    "Bahrain Cinepolis": uae_vox,
+    "Bahrain BCC": qatar_qbc
+
     
 }
 
