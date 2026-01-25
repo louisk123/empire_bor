@@ -201,7 +201,7 @@ def extract_page2_details(pdf_path):
                             and parts[-2].isdigit()
                             and parts[-1] == parts[-2]
                         ):
-                            admits = 0
+                            admits = clean_num(parts[-1]) # it will be eliminatted later on
                             gross = 0
                             net=0
                             #do not consider comps are they are beign considered in the total
