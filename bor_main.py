@@ -450,7 +450,7 @@ def process_pdf(pdf_path, excel_path):
     for _, row in mapping_df.iterrows():
         cinema_name = str(row["Name from File"]).upper()
         if cinema_name == first_line_upper:
-            st.write(cinema_name)
+            #st.write(cinema_name)
             cinema_found = cinema_name
             cinema_country = row["Country"]
             exhibitor = row["Exhibitor"]
