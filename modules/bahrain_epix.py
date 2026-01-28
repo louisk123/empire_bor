@@ -1,0 +1,253 @@
+import pdfplumber
+import pandas as pd
+import os
+from datetime import datetime
+import re
+
+
+
+# -------------------------------
+# PAGE OUTPUT COLUMNS
+# -------------------------------
+#OUTPUT_COLUMNS_PAGE = [
+#    "File", "Exhibitor","Cinema", "Week Type", "Extraction Date","Movie","Date","Time", "Screen" , "Format", "Ticket Type","Admits","Gross","Net", "Comp" ,"Is Summary",   "Summary Sessions"]
+
+
+# -------------------------------
+# Number cleaner — converts numeric strings into floats
+# Handles empty strings safely
+# -------------------------------
+
+
+formats =["Dolby Atmos"]
+
+def clean_num(x):
+    if x is None:
+        return 0.0
+    s = str(x).strip()
+    if s == "":
+        return 0.0
+    return float(s.replace(",", "."))
+
+
+def is_date(value):
+    try:
+        datetime.strptime(value, "%d-%b-%Y")
+        return True
+    except ValueError:
+        return False
+
+
+def is_number(x):
+    return x.replace(",", "").replace(".", "").isdigit()
+
+# -------------------------------
+# PAGE-1 EXTRACTION
+# Reads only the first page
+# Extracts the "Summary Table"
+# Builds list of movies (movie_list) for page-2 matching
+# -------------------------------
+
+
+
+
+def extract_first_page(pdf_path):
+
+
+    with pdfplumber.open(pdf_path) as pdf:
+        text = pdf.pages[0].extract_text() or ""
+
+    # Split into lines
+    lines = [l.strip() for l in text.splitlines()]
+
+    # Cinema name = always line 0
+    cinema = lines[0].replace("Selection", "").strip()
+
+    # extract dates
+    line = lines[3]
+
+    found = re.findall(r"\d{4}-\d{2}-\d{2}", line)
+
+    if len(found) == 2:
+        start = datetime.strptime(found[0], "%d-%m-%Y")
+        end = datetime.strptime(found[1], "%d-%m-%Y")
+        weekly = 1 if (end - start).days > 2 else None
+    else:
+        weekly = None
+
+
+    return cinema, weekly
+
+
+# ---------------------------------------
+# PAGE-2 EXTRACTION MODULE
+# Identifies movie → screen → date → time → format → ticket class rows
+# Follows all your detection & skipping rules
+# ---------------------------------------
+def extract_page2_details(pdf_path):
+
+    page2_rows = []
+
+    with pdfplumber.open(pdf_path) as pdf:
+
+        current_movie = ""
+        current_time = ""
+        current_date=""
+        current_format = "2D"
+        ticket_class=""
+
+        screen_type = None
+
+        start=False
+
+        # Loop from page 1 until last page
+        for page_index in range(0, len(pdf.pages)):
+
+            text = pdf.pages[page_index].extract_text() or ""
+            lines = text.splitlines()
+            lines = lines[4:] #remove first 4 lines
+            
+            
+            for line in lines:
+                admits = None
+                gross = None
+                net = None
+
+                stripped = line.strip()
+                  #get movie name
+
+
+                if "Movie:" in stripped:
+                    match = re.search(r"Movie:\s*(.*?)\s*No\. of Shows:", stripped)
+                    if match:
+                        current_movie = match.group(1)
+
+                        for f in formats:
+                            if f in current_movie:
+                                current_movie = current_movie.replace(f, "").strip(" -")
+                                current_format = "DOLBY"
+                                break
+
+                        start = True
+                        continue
+
+                
+                if start==True:   # skip the summary table
+
+                    skip_phrases = [
+                        "Generated On",
+                        "Final Total",
+                        "Show Time Admits",
+                        "Total Box Office",
+                        "Session Admits"
+                    ]
+
+
+
+                    if any(p in stripped for p in skip_phrases):
+                          continue         
+
+                    parts = stripped.split()
+                    if len(parts) > 0 and is_date(parts[0]):
+                        print("parts[0]",parts[0])
+                        current_date = parts[0]
+                       
+                        gross = clean_num(parts[-3])
+                        net = clean_num(parts[-2])
+                        time_match = re.search(r"\b(0?[1-9]|1[0-2]):[0-5][0-9]\s?(am|pm)\b", stripped, re.IGNORECASE)
+                        if time_match:
+                            current_time = time_match.group(0).lower()
+                            start_idx = time_match.start()   # index of the time in the string
+                            screen_type = stripped[len(parts[0]):start_idx].strip()
+                            # remove date
+                            remaining = parts[1:]
+
+                            # remove screen words
+                            screen_words = screen_type.split()
+                            remaining = remaining[len(screen_words):]
+
+                            # remove time (HH:MM am/pm)
+                            remaining = remaining[2:]
+
+                            # remove last 3 parts
+                            remaining = remaining[:-3]
+
+
+                            # assign values
+                            admits = clean_num(remaining[0]) if remaining else None
+                            ticket_class = " ".join(remaining[1:]) if len(remaining) > 1 else None
+                      
+                    else:
+                        continue
+                
+                        
+
+
+                    # Append ticket row
+                    page2_rows.append([
+                        current_movie,
+                        current_date,
+                        current_time,
+                        screen_type,
+                        current_format,
+                        ticket_class,
+                        admits,
+                        gross,
+                        net,
+                        None,
+                        None,
+                        None
+
+
+                    ])
+
+    return page2_rows
+
+# ---------------------------------------
+# MAIN LOOP — Processes all PDFs
+# Runs PAGE-1 extraction + PAGE-2 extraction
+# ---------------------------------------
+
+
+def fetch_data(pdf_path,exhibitor):
+
+
+    rows_page2 = []
+
+    f = os.path.basename(pdf_path)           # file name only
+
+
+    # -------- PAGE 1 ----------
+    cinema_name, weekly = extract_first_page(pdf_path)
+
+
+    # -------- PAGE 2 ----------
+    page2_data = extract_page2_details(pdf_path)
+    print(page2_data)
+
+    for idx, r in enumerate(page2_data, start=1):
+      new_row = [
+          f,                                      # File
+          exhibitor,                              # Exhibitor
+          cinema_name,                            # Cinema
+          weekly,                              # Week Type
+          datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Extraction Date
+      ]
+      new_row.extend(r)
+      rows_page2.append(new_row)
+      #print(idx, rows_page2)
+
+
+
+    # -------- EXPORT TO EXCEL --------
+    all_rows =  rows_page2
+    #df = pd.DataFrame(all_rows, columns=OUTPUT_COLUMNS_PAGE)
+    df = pd.DataFrame(all_rows)
+
+    return df
+
+#df = fetch_data("t.pdf", "sds")  # df must be your dataframe
+
+#with pd.ExcelWriter("expis_single_output.xlsx") as writer:
+#    df.to_excel(writer, sheet_name="Extracted Data", index=False)
+#    print("Done. Created file: epix_single_output.xlsx")
