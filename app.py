@@ -61,6 +61,7 @@ if st.button("Start Processing"):
     #progress = st.progress(0)
     total = len(pdf_files)
     status = st.empty()
+
     for idx, pdf in enumerate(pdf_files, start=1):
         suffix = os.path.splitext(pdf.name)[1].lower()
         temp_pdf = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
@@ -72,7 +73,22 @@ if st.button("Start Processing"):
 
         os.remove(temp_pdf_path)
         #progress.progress(idx / total)
-        status.write(f"Processed {idx}/{total} files")
+        #status.write(f"Processed {idx}/{total} files")
+    
+        status.markdown(
+            f"""
+            <div style="
+                background-color:#f2f2f2;
+                padding:8px 12px;
+                border-radius:6px;
+                color:#333;
+                font-size:14px;
+            ">
+                Processed {idx}/{total} files
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
     # --------------------------
