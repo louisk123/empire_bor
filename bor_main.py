@@ -446,8 +446,8 @@ def process_pdf(pdf_path, excel_path):
     cinema_country = None
     exhibitor = None
     first_line_upper = first_line.upper()
-    if first_line_upper == "AL MARIAH MALL ABU DHABHI":
-        first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
+    #if first_line_upper == "AL MARIAH MALL ABU DHABHI":
+    #    first_line_upper = first_line_upper + " " + text.split("\n")[1].strip().upper()
 
 
     for _, row in mapping_df.iterrows():
