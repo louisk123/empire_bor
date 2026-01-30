@@ -309,6 +309,7 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
                 
                 if text.upper() == "AL MARIAH MALL ABU DHABHI":
                     text = text.upper() + " " + lines.split("\n")[1].strip().upper()
+                    st.write(text)
     
                 return text
     
