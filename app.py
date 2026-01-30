@@ -151,8 +151,8 @@ if st.button("Start Processing"):
     elapsed = time.time() - start_time
     elapsed_str = f"{elapsed:.1f} seconds"
 
-    st.success("Processing complete!")
-    st.success(f"Processing complete in {elapsed_str}")
+    st.success("Processing complete! Comleted in: {elapsed_str}")
+
 
 
     # --------------------------
