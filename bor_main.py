@@ -182,7 +182,7 @@ def clean_title(t):
 
     return " ".join(t.split()).strip()
     
-def map_movie1_newest(name, movie_list, threshold=0.65):
+def map_movie1(name, movie_list, threshold=0.65):
 
     if not name or not movie_list:
         return name
@@ -232,7 +232,7 @@ def map_movie_old(name, movie_list, threshold=80):
 
 
     
-def map_movie1(name, movie_list, threshold=0.65):
+def map_movie_V0(name, movie_list, threshold=0.65):
 
     if not name or not movie_list:
         return name
