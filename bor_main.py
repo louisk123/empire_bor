@@ -307,6 +307,7 @@ def get_first_line(file_path,cinema_map):  #chekc if file is pdf or excel and tr
                 if text == "Ticket Types Per Title" and len(lines) > 3:
                     text = lines[3].replace("Selection", "").strip()
                 
+                st.write("ntital tex",text)
                 if text.upper() == "AL MARIAH MALL ABU DHABHI":
                     text = text.upper() + " " + lines.split("\n")[1].strip().upper()
                     st.write(text)
