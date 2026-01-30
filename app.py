@@ -79,10 +79,12 @@ if st.button("Start Processing"):
             f"""
             <div style="
                 background-color:#f2f2f2;
-                padding:8px 12px;
-                border-radius:6px;
+                padding:16px;
+                border-radius:10px;
                 color:#333;
-                font-size:14px;
+                font-size:16px;
+                width:100%;
+                box-sizing:border-box;
             ">
                 Processed {idx}/{total} files
             </div>
