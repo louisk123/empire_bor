@@ -85,9 +85,9 @@ if st.button("Start Processing"):
                 font-size:16px;
                 width:100%;
                 box-sizing:border-box;
+                margin-bottom:16px;
             ">
                 Processed {idx}/{total} files
-                </br>
             </div>
             """,
             unsafe_allow_html=True
