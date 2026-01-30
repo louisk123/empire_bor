@@ -58,7 +58,7 @@ if st.button("Start Processing"):
     # --------------------------
     # PROCESS PDF FILES
     # --------------------------
-    progress = st.progress(0)
+    #progress = st.progress(0)
     total = len(pdf_files)
 
     for idx, pdf in enumerate(pdf_files, start=1):
@@ -71,7 +71,10 @@ if st.button("Start Processing"):
         process_pdf(temp_pdf_path, temp_excel_path)
 
         os.remove(temp_pdf_path)
-        progress.progress(idx / total)
+        #progress.progress(idx / total)
+        status = st.empty()
+        status.write(f"Processed {idx}/{total} files")
+
 
     # --------------------------
     # COPY DATA FROM BOR FILES (ONCE)
