@@ -133,7 +133,7 @@ def get_sheet_name(row):
         return "Weekly BOR - summary"
     return "Daily BOR"
 
-def normalize_title(s: str) -> str:
+def normalize_title_old(s: str) -> str:
     if not s or pd.isna(s):
         return ""
 
@@ -159,6 +159,32 @@ def normalize_title(s: str) -> str:
             t = t[2:]
         tokens.append(t)
     return " ".join(tokens)
+    
+def map_movie(name, movie_list, threshold=0.65):
+
+    if not name or not movie_list:
+        return name
+
+    clean_name = clean_title(name)
+    clean_list = [clean_title(m) for m in movie_list]
+
+    name_vec = model.encode([clean_name], normalize_embeddings=True)
+    catalog_vecs = model.encode(clean_list, normalize_embeddings=True)
+
+    sims = cosine_similarity(name_vec, catalog_vecs)[0]
+
+    best_idx = int(np.argmax(sims))
+    best_score = sims[best_idx]
+
+    if best_score >= threshold:
+        return movie_list[best_idx]
+    # Safe prefix fallback
+
+    for m in movie_list:
+        if clean_title(m).startswith(clean_name + " "):
+            return m
+
+    return name
 
 
 def map_movie(name, movie_list, threshold=80):
@@ -182,7 +208,33 @@ def map_movie(name, movie_list, threshold=80):
 
     return name
 
-def map_movie1(name, movie_list, threshold=0.65):
+def map_movie(name, movie_list, threshold=0.65):
+
+    if not name or not movie_list:
+        return name
+
+    clean_name = clean_title(name)
+    clean_list = [clean_title(m) for m in movie_list]
+
+    name_vec = model.encode([clean_name], normalize_embeddings=True)
+    catalog_vecs = model.encode(clean_list, normalize_embeddings=True)
+
+    sims = cosine_similarity(name_vec, catalog_vecs)[0]
+
+    best_idx = int(np.argmax(sims))
+    best_score = sims[best_idx]
+
+    if best_score >= threshold:
+        return movie_list[best_idx]
+    # Safe prefix fallback
+
+    for m in movie_list:
+        if clean_title(m).startswith(clean_name + " "):
+            return m
+
+    return name
+    
+def map_movie_v0(name, movie_list, threshold=0.65):
 
     if not name or not movie_list:
         return name
