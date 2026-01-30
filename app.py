@@ -4,6 +4,7 @@ import tempfile
 import os
 from openpyxl import load_workbook
 from bor_main import process_pdf  
+import time
 
 st.title("Empire BOR Extraction System")
 st.write("Upload one Excel file, multiple PDF files, and optional BOR Excel files.")
@@ -38,6 +39,7 @@ bor_excel_files = st.file_uploader(
 # RUN PROCESSING
 # --------------------------
 if st.button("Start Processing"):
+    start_time = time.time()
 
     if not excel_file:
         st.error("Please upload an Excel file.")
@@ -146,8 +148,12 @@ if st.button("Start Processing"):
         wb_target.save(temp_excel_path)
 
 
+    elapsed = time.time() - start_time
+    elapsed_str = f"{elapsed:.1f} seconds"
 
     st.success("Processing complete!")
+    st.success(f"Processing complete in {elapsed_str}")
+
 
     # --------------------------
     # DOWNLOAD RESULT
