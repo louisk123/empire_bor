@@ -159,6 +159,28 @@ def normalize_title_old(s: str) -> str:
             t = t[2:]
         tokens.append(t)
     return " ".join(tokens)
+
+def clean_title(t):
+    t = t.upper()
+
+    # Remove brackets content (PG, language, format)
+    t = re.sub(r"\(.*?\)", "", t)
+
+    # Remove language ONLY if it appears as suffix metadata
+    t = re.sub(r"\s[-|]\s*(ARABIC|ENGLISH|FRENCH|HINDI)\b.*$", "", t)
+
+    # Remove ratings
+    t = re.sub(r"\bPG\s?-?\s?\d+\+?\b", "", t)
+    t = re.sub(r"\b\d+\+\b", "", t)
+    t = re.sub(r"\b(U|G|PG|R|NC-17)\b", "", t)
+
+    # Remove formats
+    t = re.sub(r"\b(2D|3D|IMAX|4DX|SUITES)\b", "", t)
+
+    # Normalize separators
+    t = re.sub(r"[-_/]", " ", t)
+
+    return " ".join(t.split()).strip()
     
 def map_movie1(name, movie_list, threshold=0.65):
 
